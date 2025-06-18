@@ -119,6 +119,7 @@ Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on fam
 
 ```{r,fig.width=12, fig.height=8, out.width="95%"}
 #| label: label-me-1
+
 library(magick)
 
 # Load parchment image
@@ -134,68 +135,200 @@ margin <- 40
 title_height <- 100
 gap_below_title <- -50
 
-# -
-
 # Create transparent canvas for the title text
-# Move title closer to top edge by reducing vertical margin in title canvas height
 title_canvas <- image_blank(width = img_width, height = title_height + margin, color = "none")
 
-# Annotate the title with IM FELL English SC font, bold style, and closer to edge
+# Annotate the title
 title_text <- "INCOME AND EXPENDITURE OF 150 NEGRO FAMILIES IN ATLANTA,GA.,USA."
 title_layer <- image_annotate(
   title_canvas,
   text = title_text,
   size = 25,
-  gravity = "north",         # Align top-center vertically
-  location = "+0+40",        # 10 px down from very top edge (adjust as needed)
+  gravity = "north",
+  location = "+0+40",
   font = "IM FELL English SC",
-  weight = 700,              # Bold weight (may depend on font support)
-  color = "#000000BB"        # semi-transparent black for subtle aged effect
+  weight = 700,
+  color = "#000000BB"
 )
 
-# Optional: add a tiny blur to soften edges (makes it a bit worn)
 title_layer <- image_blur(title_layer, radius = 0.5, sigma = 0.3)
-
-# Composite the title on top of the parchment background, aligned at top
 composite_img <- image_composite(background_img, title_layer, offset = "+0+0")
 
 # Compute usable space for grid below title
 usable_width <- img_width - 2 * margin
-usable_height <- img_height - margin - title_height  # top margin reduced to 'margin' only
+usable_height <- img_height - margin - title_height
 n_cols <- 6
 n_rows <- 4
 cell_width <- usable_width / n_cols
 cell_height <- usable_height / n_rows
 
-# Draw the grid lines over composite_img using image_draw()
-final_img <- image_draw(composite_img)
-
-# Grid top starts below margin + title_height
+# Grid positions
 grid_top <- margin + title_height + gap_below_title
 grid_bottom <- img_height - margin
 grid_left <- margin
 grid_right <- img_width - margin
 
-# Draw vertical grid lines
-for (i in 0:n_cols) {
-  x <- grid_left + i * cell_width
-  segments(x0 = x, y0 = grid_top, x1 = x, y1 = grid_bottom, col = "red", lwd = 2)
+# Read and resize image to fit cell (0,0)
+annual_income_img <- image_read("images/annual_income.png")
+annual_income_img_resized <- image_scale(annual_income_img, geometry = paste0(cell_width, "x", cell_height, "!"))
+x_pos <- grid_left
+y_pos <- grid_top
+composite_img <- image_composite(composite_img, annual_income_img_resized, offset = paste0("+", x_pos, "+", y_pos))
+
+# Add label with border across cols 1 to 5
+span_x_left <- grid_left + cell_width * 1
+span_x_right <- grid_left + cell_width * 6
+span_width <- span_x_right - span_x_left
+
+label_text <- image_blank(width = span_width, height = 50, color = "none")
+label_text <- image_annotate(
+  label_text,
+  text = "ANNUAL EXPENDITURE FOR",
+  size = 25,
+  gravity = "center",
+  font = "IM FELL English SC",
+  weight = 0,
+  color = "#000000BB"
+)
+
+label_trimmed <- image_trim(label_text)
+label_padded <- image_extent(label_trimmed, geometry = paste0(span_width, "x", image_info(label_trimmed)$height), gravity = "center")
+label_with_border <- image_border(label_padded, color = "black", geometry = "2x2")
+label_height <- image_info(label_with_border)$height
+label_y <- grid_top - label_height + 2
+label_x <- span_x_left
+
+composite_img <- image_composite(
+  composite_img,
+  label_with_border,
+  offset = paste0("+", round(label_x), "+", round(label_y))
+)
+
+# Add column titles (RENT, FOOD, etc.)
+top_col_titles <- c("RENT", "FOOD", "CLOTHES", "DIRECT TAXES", "OTHER EXPENSES AND SAVINGS")
+
+title_height_area <- 15  # uniform height for all title boxes
+
+for (i in 1:5) {
+  title_x_left <- grid_left + (i * cell_width)
+  title_width <- cell_width
+
+  # Estimate font size to fit the column width
+  max_text_width <- title_width - 10  # padding
+  title_font_size <- 25
+  title_box_temp <- image_blank(width = title_width, height = title_height_area, color = "none")
+
+  repeat {
+    title_test <- image_annotate(
+      title_box_temp,
+      text = top_col_titles[i],
+      size = title_font_size,
+      gravity = "center",
+      font = "Broadway",
+      weight = 0,
+      color = "#000000BB"
+    )
+    if (image_info(title_test)$width <= max_text_width || title_font_size <= 9.5) break
+    title_font_size <- title_font_size - 1
+  }
+
+  title_box <- image_blank(width = title_width, height = title_height_area, color = "none")
+  title_annotated <- image_annotate(
+    title_box,
+    text = top_col_titles[i],
+    size = title_font_size,
+    gravity = "center",
+    font = "IM FELL English SC",
+    weight = 0,
+    color = "#000000BB"
+  )
+
+  title_with_border <- image_border(title_annotated, color = "black", geometry = "2x2")
+
+  # - adjust the vertical position of the col-title-boxes.
+  title_y <- grid_top - title_height_area + 15
+  title_x <- title_x_left
+
+  composite_img <- image_composite(
+    composite_img,
+    title_with_border,
+    offset = paste0("+", round(title_x), "+", round(title_y))
+  )
 }
 
-# Draw horizontal grid lines
-for (j in 0:n_rows) {
-  y <- grid_top + j * cell_height
-  segments(x0 = grid_left, y0 = y, x1 = grid_right, y1 = y, col = "red", lwd = 2)
+# --- NEW: Add image icons below headers and above footers ---
+images_col_headers <- c(
+  "images/rent.jpg",
+  "images/food.png",
+  "images/clothes.png",
+  "images/direct_taxes.png",
+  "images/other_expenses_savings.png"
+)
+
+icon_height <- 132  # height of the image icons
+icon_gap_top <- 3  # gap below header box
+icon_gap_bottom <- 3  # gap above footer box
+
+for (i in 1:5) {
+  icon_x_left <- grid_left + (i * cell_width)
+  icon_width <- cell_width
+  icon_y <- grid_top + title_height_area + icon_gap_top
+
+  icon_img <- image_read(images_col_headers[i])
+  icon_resized <- image_scale(icon_img, geometry = paste0(icon_width, "x", icon_height, "!"))
+  icon_with_border <- image_border(icon_resized, color = "black", geometry = "2x2")
+
+  composite_img <- image_composite(
+    composite_img,
+    icon_with_border,
+    offset = paste0("+", round(icon_x_left), "+", round(icon_y))
+  )
 }
+
+# --- Restore column footers with colors for columns 1 to 5 ---
+c_palette <- c("#1B1B19",
+               "#755D75",
+               "#C18C7E",
+               "#ab9f9d",
+               "#d9e6e8"
+)
+
+footer_height_area <- title_height_area  # same height as header boxes
+
+for (i in 1:5) {
+  footer_x_left <- grid_left + (i * cell_width)
+  footer_width <- cell_width
+
+  footer_box <- image_blank(width = footer_width, height = footer_height_area, color = c_palette[i])
+  footer_with_border <- image_border(footer_box, color = "black", geometry = "2x2")
+
+  footer_y <- grid_top + cell_height - footer_height_area - 4
+  footer_x <- footer_x_left
+
+  composite_img <- image_composite(
+    composite_img,
+    footer_with_border,
+    offset = paste0("+", round(footer_x), "+", round(footer_y))
+  )
+}
+
+# Draw the grid
+final_img <- image_draw(composite_img)
+
+# for (i in 0:n_cols) {
+#   x <- grid_left + i * cell_width
+#   segments(x0 = x, y0 = grid_top, x1 = x, y1 = grid_bottom, col = "red", lwd = 2)
+# }
+# 
+# for (j in 0:n_rows) {
+#   y <- grid_top + j * cell_height
+#   segments(x0 = grid_left, y0 = y, x1 = grid_right, y1 = y, col = "red", lwd = 2)
+# }
 
 dev.off()
 
-# Display final image with title + grid
 print(final_img)
-
-# Optionally save output
-image_write(final_img, "parchment_grid_with_title.png")
-
+image_write(final_img, "parchment_grid_with_titles.png")
 
 ```
 
