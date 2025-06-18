@@ -1,0 +1,10 @@
+.question-box {
+  background-color: #e0e0e0;
+  margin: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #16DB65;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}

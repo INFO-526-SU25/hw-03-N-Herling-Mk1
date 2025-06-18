@@ -1,29 +1,236 @@
 ---
 title: "HW 03"
 author: "Nathan Herling"
+date: "2025-06-20"
+_due: "Friday-June-13-2025"   
 format:
   html:
     embed-resources: true
-toc: true
+    code-fold: true
+    code-tools: true
+    toc: true
+    css: styles.css       # ✅ Add this line to link your CSS file
 ---
 
-## 1 - Du Bois challenge.
+```{r setup}
+#--------------------->
+#################
+# Package Setup #
+#################
+#Check if pacman [package manager] is installed, if not install it.
+#throw [FYI] alert either way.
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  message("Installing 'pacman' (not found locally)...")
+  install.packages("pacman")
+} else {
+  message("[FYI]\n'pacman' already installed — skipping install.")
+}
+# use this line for installing/loading
+# pacman::p_load()
+# - packages to load stored in a variable (vector)
+pkgs <- c(
+  "tidyverse",
+  "glue",
+  "scales",
+  "lubridate",
+  "patchwork",
+  "ggh4x",
+  "ggrepel",
+  "openintro",
+  "ggridges",
+  "dsbox",
+  "janitor",
+  "here",
+  "knitr",
+  "ggthemes",
+  "ggplot2",
+  "kableExtra",
+  "palmerpenguins",
+  "grid",
+  "htmltools",
+  "plotly",
+  "ggforce",
+  "cowplot",
+  "magick"
+)
 
-```{r}
+# - load from the character array/vector
+pacman::p_load(char=pkgs)
+
+# - install tidyverse/dsbox directly from Git Hub
+# - this allows for the possible need to install on a repo. pull.
+# - and, if it's already installed just thorw an alert.
+if (!requireNamespace("dsbox", quietly = TRUE)) {
+  message("Installing 'dsbox' from GitHub (not found locally)...")
+  suppressMessages(devtools::install_github("tidyverse/dsbox"))
+} else {
+  message("[FYI]\n'dsbox' already installed — skipping GitHub install.")
+}
+
+# - alert to user packages loaded.
+# Set number of columns (adjustable)
+n_cols <- 4
+
+# Add * to each package name
+pkgs <- paste0("* ", pkgs)
+
+# Calculate number of rows based on total packages
+n_rows <- ceiling(length(pkgs) / n_cols)
+
+# Pad with empty strings to complete grid
+pkgs_padded <- c(pkgs, rep("", n_rows * n_cols - length(pkgs)))
+
+# Create matrix (fill by row)
+pkg_matrix <- matrix(pkgs_padded, nrow = n_rows, byrow = TRUE)
+
+# Print header
+cat("The packages loaded:")
+
+# Loop and print each row (use invisible to suppress NULL)
+invisible(apply(pkg_matrix, 1, function(row) {
+  cat(paste(format(row, width = 22), collapse = ""), "\n")
+}))
+#-------------------------->
+######################
+# Basic set Theme up #
+######################
+# ---- set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+
+# set width of code output
+options(width = 65)
+
+# set figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 7,        # 7" width
+  fig.asp = 0.618,      # the golden ratio
+  fig.retina = 3,       # dpi multiplier for displaying HTML output on retina
+  fig.align = "center", # center align figures
+  dpi = 300             # higher dpi, sharper image
+)
+## ---- end theme set up
+```
+
+
+## 1 - Du Bois challenge.
+<div class="question-box">
+Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on family budgets split by income classes for 150 families in Atlanta, Georgia. This visualization was originally created using ink and watercolors.
+</div>
+
+```{r,fig.width=12, fig.height=8, out.width="95%"}
 #| label: label-me-1
+library(magick)
+
+# Load parchment image
+background_img <- image_read("images/parchment_sheet.png")
+
+# Get image dimensions
+info <- image_info(background_img)
+img_width <- info$width
+img_height <- info$height
+
+# Margins and title height
+margin <- 40
+title_height <- 100
+gap_below_title <- -50
+
+# -
+
+# Create transparent canvas for the title text
+# Move title closer to top edge by reducing vertical margin in title canvas height
+title_canvas <- image_blank(width = img_width, height = title_height + margin, color = "none")
+
+# Annotate the title with IM FELL English SC font, bold style, and closer to edge
+title_text <- "INCOME AND EXPENDITURE OF 150 NEGRO FAMILIES IN ATLANTA,GA.,USA."
+title_layer <- image_annotate(
+  title_canvas,
+  text = title_text,
+  size = 25,
+  gravity = "north",         # Align top-center vertically
+  location = "+0+40",        # 10 px down from very top edge (adjust as needed)
+  font = "IM FELL English SC",
+  weight = 700,              # Bold weight (may depend on font support)
+  color = "#000000BB"        # semi-transparent black for subtle aged effect
+)
+
+# Optional: add a tiny blur to soften edges (makes it a bit worn)
+title_layer <- image_blur(title_layer, radius = 0.5, sigma = 0.3)
+
+# Composite the title on top of the parchment background, aligned at top
+composite_img <- image_composite(background_img, title_layer, offset = "+0+0")
+
+# Compute usable space for grid below title
+usable_width <- img_width - 2 * margin
+usable_height <- img_height - margin - title_height  # top margin reduced to 'margin' only
+n_cols <- 6
+n_rows <- 4
+cell_width <- usable_width / n_cols
+cell_height <- usable_height / n_rows
+
+# Draw the grid lines over composite_img using image_draw()
+final_img <- image_draw(composite_img)
+
+# Grid top starts below margin + title_height
+grid_top <- margin + title_height + gap_below_title
+grid_bottom <- img_height - margin
+grid_left <- margin
+grid_right <- img_width - margin
+
+# Draw vertical grid lines
+for (i in 0:n_cols) {
+  x <- grid_left + i * cell_width
+  segments(x0 = x, y0 = grid_top, x1 = x, y1 = grid_bottom, col = "red", lwd = 2)
+}
+
+# Draw horizontal grid lines
+for (j in 0:n_rows) {
+  y <- grid_top + j * cell_height
+  segments(x0 = grid_left, y0 = y, x1 = grid_right, y1 = y, col = "red", lwd = 2)
+}
+
+dev.off()
+
+# Display final image with title + grid
+print(final_img)
+
+# Optionally save output
+image_write(final_img, "parchment_grid_with_title.png")
+
 
 ```
 
 ## 2 - COVID survey - interpret
-
+<div class="question-box">
+Q2 ....
+</div>
 ```{r}
 #| label: label-me-2
 
 ```
 
 ## 3 - COVID survey - reconstruct
+<div class="question-box">
+Q3 ....
+</div>
+```{r}
+#| label: label-me-3
 
+```
 
 ## 4 - COVID survey - re-reconstruct
+<div class="question-box">
+Q4 ....
+</div>
+```{r}
+#| label: label-me-4
+
+```
 
 ## 5 - COVID survey - another view
+<div class="question-box">
+Q5 ....
+</div>
+```{r}
+#| label: label-me-5
+
+```
