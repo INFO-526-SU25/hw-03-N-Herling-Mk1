@@ -121,6 +121,16 @@ Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on fam
 ```{r,fig.width=12, fig.height=8, out.width="95%"}
 #| label: label-me-1
 
+pacman::p_load(here)
+source(here("q1\\setup.R"))
+
+library(magick)
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(forcats)
+library(tidyr)
+
 # Load the data
 income_data <- read_csv("data/income.csv")
 
@@ -522,91 +532,7 @@ income_plot <- ggplot(income_augmented, aes(
   labs(fill = "", x = "", y = "")
 
 
-#============================================
-# --- Add connector lines manually using geom_segment ---
-# 2. Build your ggplot bar chart
-# Prepare bridging lines data frame
-# stack_order <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
-#
-# bar_coords_clean <- bar_coords %>%
-#   filter(name != "SPACER") %>%
-#   mutate(name = factor(name, levels = stack_order))
-#
-# connecting_lines <- data.frame()
-#
-# for (i in seq_along(stack_order)[-length(stack_order)]) {
-#   left_cat <- stack_order[i]
-#   right_cat <- stack_order[i + 1]
-#
-#   left_data <- bar_coords_clean %>%
-#     filter(name == left_cat) %>%
-#     select(Class_spaced, x, ymin, ymax)
-#
-#   right_data <- bar_coords_clean %>%
-#     filter(name == right_cat) %>%
-#     select(Class_spaced, x, ymin, ymax)
-#
-#   join_data <- left_data %>%
-#     inner_join(right_data, by = "Class_spaced", suffix = c("_left", "_right"))
-#
-#   lines_df <- join_data %>%
-#     mutate(
-#       x_start = x_left + 0.5,
-#       x_end   = x_right - 0.5,
-#       y_start = (ymin_left + ymax_left) / 2,
-#       y_end   = (ymin_right + ymax_right) / 2
-#     ) %>%
-#     select(x_start, y_start, x_end, y_end)
-#
-#   connecting_lines <- bind_rows(connecting_lines, lines_df)
-# }
 
-#========
-library(dplyr)
-
-# # Define stack order exactly as in your plot fill scale
-# stack_levels <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
-#
-# # Filter out spacers and set factor levels for stacks
-# coords_data <- income_augmented %>%
-#   filter(name != "SPACER") %>%
-#   mutate(name = factor(name, levels = stack_levels)) %>%
-#   group_by(Class_spaced) %>%
-#   arrange(name) %>%
-#   mutate(
-#     ymin = cumsum(value) - value,  # bottom edge of segment
-#     ymax = cumsum(value),          # top edge of segment
-#     x = as.numeric(Class_spaced)   # numeric x-axis position of bar
-#   ) %>%
-#   ungroup()
-#
-# # View the result
-# print(coords_data %>% select(Class_spaced, name, value, x, ymin, ymax))
-# #-----------
-# lines_data <- coords_data %>%
-#   filter(name != "SPACER") %>%
-#   group_by(name) %>%
-#   arrange(x) %>%
-#   mutate(
-#     x_next = lead(x),
-#     ymin_next = lead(ymin)
-#   ) %>%
-#   # Keep only adjacent bars: next bar x should be current x + 2 (because of spacers)
-#   filter(!is.na(x_next), x_next == x + 2) %>%
-#   ungroup() %>%
-#   transmute(
-#     x_start = ymax,     # top of segment in current bar (horizontal position)
-#     y_start = x,        # vertical bar position current
-#     x_end = ymin_next,  # bottom of segment in next bar
-#     y_end = x_next      # vertical bar position next
-#   )
-#-------------
-# === Add Right-Side Vertical Class Labels ===
-#============
-
-
-
-#========
 # --- Render and Position Chart ---
 temp_file <- tempfile(fileext = ".png")
 ggsave(filename = temp_file, plot = income_plot, width = 8, height = 5, dpi = 144, bg = "transparent")
@@ -619,7 +545,9 @@ bar_chart_resized <- image_scale(bar_chart_img, paste0(bar_chart_width, "x", bar
 
 bar_chart_x <- grid_left + cell_width + bar_chart_offset_x - 50
 bar_chart_y <- grid_top + cell_height + bar_chart_offset_y
+#------------------ here ----------------------------
 
+#====================================================
 composite_img <- image_composite(
   composite_img,
   bar_chart_resized,
@@ -641,44 +569,61 @@ row_height <- bar_chart_height / total_rows
 label_start_y <- bar_chart_y
 
 # Label X position (to the right of bar chart)
-label_x <- bar_chart_x + bar_chart_width - 100  # Add padding
+label_x <- bar_chart_x + bar_chart_width - 150  # Add padding
 
-# Add labels one by one
+shift_down_pixels <- 10  # adjust as you want (positive = move down)
+
+# -
 for (i in seq_along(right_labels)) {
   label_text <- right_labels[i]
   rows_span <- row_counts[i]
   label_height <- row_height * rows_span
-  label_y <- label_start_y + (row_height * (sum(row_counts[1:(i-1)]))) + (label_height / 2)
+  label_y <- 5 + label_start_y + (row_height * (sum(row_counts[1:(i-1)]))) + (label_height / 2)
 
-  # 🔧 Adjustment: move "POOR" up 2 rows
+  # Move POOR up 2 rows (your existing adjustment)
   if (label_text == "POOR") {
     label_y <- label_y - 2 * row_height
   }
 
+  # NEW: move POOR and FAIR *down* by shift_down_pixels
+  if (label_text %in% c("POOR", "FAIR")) {
+    label_y <- label_y + shift_down_pixels
+  }
+
   # Create and annotate image
-  label_img <- image_blank(width = 100, height = label_height, color = "none")
+  label_img <- image_blank(width = 30, height = label_height, color = "none")
   label_img <- image_annotate(
     label_img,
     text = label_text,
-    size = ,
+    size = 11,
     gravity = "center",
     font = "IM FELL English SC",
     weight = 300,
     color = "#000000DD",
     degrees = 270  # Vertical text (bottom to top)
   )
+  #label_img <- image_trim(label_img)  # <-- removes padding
+  # ➕ Create brace image
+  brace_img <- image_blank(width = 40, height = label_height, color = "none")
+  brace_img <- image_annotate(
+    brace_img,
+    text = "}",  # curly brace
+    size = label_height * 0.9,  # scale size to span rows
+    gravity = "center",
+    font = "Times",  # or another serif font with a clear brace
+    color = "#000000AA"
+  )
 
-  # Composite label onto final image
+  # ➕ Combine brace and label horizontally
+  combined_img <- image_append(c(brace_img, label_img))
+
+  # 🧷 Composite onto final image
   composite_img <- image_composite(
     composite_img,
-    label_img,
-    offset = paste0("+", round(label_x), "+", round(label_y - label_height / 2))
+    combined_img,
+    offset = paste0("+", round(label_x+70), "+", round(label_y - label_height / 2))
   )
 }
-#==========
-# Manually created bridging lines data frame
-
-
 #============
 # print(list(
 #   bar_chart_x = bar_chart_x,
@@ -753,6 +698,7 @@ image_write(composite_img, path = "output/final_composite.png")
 
 # Optionally display the image
 print(composite_img)
+
 ```
 
 ```{r}
