@@ -122,6 +122,23 @@ Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on fam
 
 library(magick)
 
+# Load the data
+income_data <- read_csv("data/income.csv")
+
+# --- New: Extract data for col_0, row_1..5 overlay table ---
+library(dplyr)
+library(scales)
+
+table_data <- income_data |>
+  select(Class, `Actual Average` = Average_Income) |>
+  mutate(`Actual Average` = dollar(`Actual Average`))  # Format as US Dollars
+
+# Add header row
+header_row <- tibble(Class = "Class", `Actual Average` = "ACTUAL AVERAGE")
+table_data <- bind_rows(header_row, table_data)
+
+# --- Back to existing code ---
+
 # Load parchment image
 background_img <- image_read("images/parchment_sheet.png")
 
@@ -245,7 +262,6 @@ for (i in 1:5) {
 
   title_with_border <- image_border(title_annotated, color = "black", geometry = "2x2")
 
-  # - adjust the vertical position of the col-title-boxes.
   title_y <- grid_top - title_height_area + 15
   title_x <- title_x_left
 
@@ -265,9 +281,9 @@ images_col_headers <- c(
   "images/other_expenses_savings.png"
 )
 
-icon_height <- 132  # height of the image icons
-icon_gap_top <- 3  # gap below header box
-icon_gap_bottom <- 3  # gap above footer box
+icon_height <- 132
+icon_gap_top <- 3
+icon_gap_bottom <- 3
 
 for (i in 1:5) {
   icon_x_left <- grid_left + (i * cell_width)
@@ -293,7 +309,7 @@ c_palette <- c("#1B1B19",
                "#d9e6e8"
 )
 
-footer_height_area <- title_height_area  # same height as header boxes
+footer_height_area <- title_height_area
 
 for (i in 1:5) {
   footer_x_left <- grid_left + (i * cell_width)
@@ -311,7 +327,107 @@ for (i in 1:5) {
     offset = paste0("+", round(footer_x), "+", round(footer_y))
   )
 }
+#============== LEFT COLUMN TABLE ==================================>>>
+# --- NEW: Render table in col_0, rows 0 to 6 (header + 6 rows) ---
+# --- UPDATED: Render table spanning from row_1 to row_5 (entire vertical height of 4 grid rows) ---
+library(stringr)  # make sure stringr is loaded
 
+cell_x <- grid_left
+num_rows <- nrow(table_data)
+
+table_top_y <- grid_top + cell_height      # start at row_1 - manually adjust height(s)
+table_total_height <- 4 * cell_height       # span rows 1 to 5 (4 grid rows)
+
+header_row_height <- 20                      # smaller height for header
+data_rows_height <- table_total_height - header_row_height
+data_row_height <- data_rows_height / (num_rows - 1)  - 25 # divide remaining height among data rows
+
+col_width <- cell_width / 2
+
+# Render header row first (index 0)
+row_y <- table_top_y
+
+# Class header cell with border
+class_box <- image_blank(width = col_width, height = header_row_height, color = "none")
+class_box <- image_annotate(
+  class_box,
+  text = table_data$Class[1],
+  size = 9,
+  gravity = "center",
+  font = "IM FELL English SC",
+  weight = 300,
+  color = "#000000DD"
+)
+class_box_bordered <- image_border(class_box, color = "black", geometry = "1x1")
+
+# Income header cell with border
+income_box <- image_blank(width = col_width, height = header_row_height, color = "none")
+income_box <- image_annotate(
+  income_box,
+  text = table_data$`Actual Average`[1],
+  size = 8.5,
+  gravity = "center",
+  font = "IM FELL English SC",
+  weight = 300,
+  color = "#000000DD"
+)
+income_box_bordered <- image_border(income_box, color = "black", geometry = "1x1")
+
+# Append side by side
+combined_row <- image_append(c(class_box_bordered, income_box_bordered), stack = FALSE)
+
+composite_img <- image_composite(
+  composite_img,
+  combined_row,
+  offset = paste0("+", round(cell_x), "+", round(row_y))
+)
+
+# Render data rows (from i=1 to num_rows-1)
+for (i in 1:(num_rows - 1)) {
+  row_y <- table_top_y + header_row_height + ((i - 1) * data_row_height)
+
+  if (i == (num_rows - 1)) {
+    # Wrap with str_wrap, then replace spaces with \n to force line breaks
+    wrapped_text <- str_wrap(table_data$Class[i + 1], width = 15)
+    wrapped_text <- gsub(" ", "\n", wrapped_text)
+    class_text <- wrapped_text
+  } else {
+    class_text <- table_data$Class[i + 1]
+  }
+
+  class_box <- image_blank(width = col_width, height = data_row_height, color = "none")
+  class_box <- image_annotate(
+    class_box,
+    text = class_text,
+    size = 14,
+    gravity = "center",
+    font = "IM FELL English SC",
+    color = "#000000DD"
+  )
+  class_box_bordered <- image_border(class_box, color = "black", geometry = "1x1")
+
+  income_box <- image_blank(width = col_width, height = data_row_height, color = "none")
+  income_box <- image_annotate(
+    income_box,
+    text = table_data$`Actual Average`[i + 1],
+    size = 14,
+    gravity = "center",
+    font = "IM FELL English SC",
+    color = "#000000DD"
+  )
+  income_box_bordered <- image_border(income_box, color = "black", geometry = "1x1")
+
+  combined_row <- image_append(c(class_box_bordered, income_box_bordered), stack = FALSE)
+
+  composite_img <- image_composite(
+    composite_img,
+    combined_row,
+    offset = paste0("+", round(cell_x), "+", round(row_y))
+  )
+}
+
+
+#======================================>>>>
 # Draw the grid
 final_img <- image_draw(composite_img)
 
@@ -329,6 +445,7 @@ dev.off()
 
 print(final_img)
 image_write(final_img, "parchment_grid_with_titles.png")
+
 
 ```
 
