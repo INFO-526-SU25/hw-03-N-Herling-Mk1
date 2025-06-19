@@ -51,9 +51,10 @@ pkgs <- c(
   "plotly",
   "ggforce",
   "cowplot",
-  "magick"
+  "magick",
+  "forcats",
+  "stringr"
 )
-
 # - load from the character array/vector
 pacman::p_load(char=pkgs)
 
@@ -120,15 +121,10 @@ Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on fam
 ```{r,fig.width=12, fig.height=8, out.width="95%"}
 #| label: label-me-1
 
-library(magick)
-
 # Load the data
 income_data <- read_csv("data/income.csv")
 
 # --- New: Extract data for col_0, row_1..5 overlay table ---
-library(dplyr)
-library(scales)
-
 table_data <- income_data |>
   select(Class, `Actual Average` = Average_Income) |>
   mutate(`Actual Average` = dollar(`Actual Average`))  # Format as US Dollars
@@ -136,8 +132,6 @@ table_data <- income_data |>
 # Add header row
 header_row <- tibble(Class = "Class", `Actual Average` = "ACTUAL AVERAGE")
 table_data <- bind_rows(header_row, table_data)
-
-# --- Back to existing code ---
 
 # Load parchment image
 background_img <- image_read("images/parchment_sheet.png")
@@ -221,6 +215,8 @@ composite_img <- image_composite(
   offset = paste0("+", round(label_x), "+", round(label_y))
 )
 
+
+#========
 # Add column titles (RENT, FOOD, etc.)
 top_col_titles <- c("RENT", "FOOD", "CLOTHES", "DIRECT TAXES", "OTHER EXPENSES AND SAVINGS")
 
@@ -327,31 +323,39 @@ for (i in 1:5) {
     offset = paste0("+", round(footer_x), "+", round(footer_y))
   )
 }
+#=====--------------------------------------------------------------------->>> checked
 #============== LEFT COLUMN TABLE ==================================>>>
 # --- NEW: Render table in col_0, rows 0 to 6 (header + 6 rows) ---
 # --- UPDATED: Render table spanning from row_1 to row_5 (entire vertical height of 4 grid rows) ---
 library(stringr)  # make sure stringr is loaded
 
+# Add horizontal scale factor (e.g., 0.85 means 85% width)
+horizontal_scale <- 0.91
+col_width <- (cell_width / 2) * horizontal_scale  # Scaled column width
+
 cell_x <- grid_left
 num_rows <- nrow(table_data)
 
-table_top_y <- grid_top + cell_height      # start at row_1 - manually adjust height(s)
-table_total_height <- 4 * cell_height       # span rows 1 to 5 (4 grid rows)
+table_top_y <- grid_top + cell_height + 5      # start at row_1 - manually adjust height(s)
+table_total_height <- 4 * cell_height          # span rows 1 to 5 (4 grid rows)
 
-header_row_height <- 20                      # smaller height for header
+header_row_height <- 20                        # smaller height for header
 data_rows_height <- table_total_height - header_row_height
-data_row_height <- data_rows_height / (num_rows - 1)  - 25 # divide remaining height among data rows
+data_row_height <- data_rows_height / (num_rows - 1) - 25  # divide remaining height among data rows
 
-col_width <- cell_width / 2
+# Define wrap width — adjust based on your cell width and font size
+wrap_width <- 10
 
-# Render header row first (index 0)
+# Render header row
 row_y <- table_top_y
 
-# Class header cell with border
+# Wrap the header cell text (Class)
+class_text_wrapped <- str_wrap(table_data$Class[1], width = wrap_width)
+
 class_box <- image_blank(width = col_width, height = header_row_height, color = "none")
 class_box <- image_annotate(
   class_box,
-  text = table_data$Class[1],
+  text = class_text_wrapped,
   size = 9,
   gravity = "center",
   font = "IM FELL English SC",
@@ -360,12 +364,12 @@ class_box <- image_annotate(
 )
 class_box_bordered <- image_border(class_box, color = "black", geometry = "1x1")
 
-# Income header cell with border
+# income header as before
 income_box <- image_blank(width = col_width, height = header_row_height, color = "none")
 income_box <- image_annotate(
   income_box,
   text = table_data$`Actual Average`[1],
-  size = 8.5,
+  size = 7.5,
   gravity = "center",
   font = "IM FELL English SC",
   weight = 300,
@@ -373,86 +377,384 @@ income_box <- image_annotate(
 )
 income_box_bordered <- image_border(income_box, color = "black", geometry = "1x1")
 
-# Append side by side
-combined_row <- image_append(c(class_box_bordered, income_box_bordered), stack = FALSE)
+composite_img <- image_composite(composite_img, class_box_bordered, offset = paste0("+", cell_x, "+", round(row_y)))
+composite_img <- image_composite(composite_img, income_box_bordered, offset = paste0("+", cell_x + col_width, "+", round(row_y)))
+
+row_y <- row_y + header_row_height
+
+# Render data rows with pale brownish background
+for (i in 2:num_rows) {
+  bg_col <- ifelse(i %% 2 == 0, "#E3D6BD99", "#FFFFFF00")
+  class_bg <- image_blank(width = col_width, height = data_row_height, color = bg_col)
+  income_bg <- image_blank(width = col_width, height = data_row_height, color = bg_col)
+
+  # Wrap class cell text here
+  class_text_wrapped <- str_wrap(table_data$Class[i], width = wrap_width)
+
+  class_cell <- image_annotate(
+    class_bg,
+    text = class_text_wrapped,
+    size = 9,
+    gravity = "center",
+    font = "IM FELL English SC",
+    weight = 300,
+    color = "#000000DD"
+  )
+  income_cell <- image_annotate(
+    income_bg,
+    text = table_data$`Actual Average`[i],
+    size = 9,
+    gravity = "center",
+    font = "IM FELL English SC",
+    weight = 300,
+    color = "#000000DD"
+  )
+
+  class_cell_bordered <- image_border(class_cell, color = "black", geometry = "1x1")
+  income_cell_bordered <- image_border(income_cell, color = "black", geometry = "1x1")
+
+  composite_img <- image_composite(composite_img, class_cell_bordered, offset = paste0("+", cell_x, "+", round(row_y)))
+  composite_img <- image_composite(composite_img, income_cell_bordered, offset = paste0("+", cell_x + col_width, "+", round(row_y)))
+
+  row_y <- row_y + data_row_height
+}
+#======-------------------------------------------------------------------->> here
+#============== BAR CHART OVERLAY ==================================>>>
+#============== BAR CHART OVERLAY WITH CONTROLS ===============================>>>
+
+library(tidyr)
+library(forcats)
+
+# --- Adjustable Variables ---
+bar_chart_height_scale <- 0.75    # Controls vertical compression of bar chart (0 to 1)
+bar_spacing_ratio      <- 0.7     # Controls thickness of bars (height of each bar)
+bar_chart_offset_x     <- 0       # Horizontal adjustment in pixels
+bar_chart_offset_y     <- 5       # Vertical adjustment in pixels
+bar_gap_size           <- 1       # Controls vertical spacing between bar groups (not used now)
+
+# --- Data Prep ---
+income_long <- income_data %>%
+  pivot_longer(cols = c("Rent", "Food", "Clothes", "Tax", "Other"),
+               names_to = "name", values_to = "value") %>%
+  filter(!is.na(value), value != 0) %>%
+  mutate(name = toupper(name)) %>%
+  mutate(textcol = ifelse(name == "RENT", "1", "0"))
+
+# --- Create spacer factor levels between Classes ---
+classes <- rev(unique(income_data$Class))  # Reversed order for top-to-bottom inversion
+spacer_levels <- paste0("SPACER_", seq_len(length(classes) - 1))
+
+# Interleave classes and spacer_levels manually
+new_levels <- character(length(classes) + length(spacer_levels))
+new_levels[c(TRUE, FALSE)] <- classes
+new_levels[c(FALSE, TRUE)] <- spacer_levels
+
+# Assign Class_spaced with original classes first
+income_long <- income_long %>%
+  mutate(Class_spaced = factor(as.character(Class), levels = classes))
+
+# Create spacer rows with zero value for each spacer level
+spacer_rows <- data.frame(
+  Class_spaced = factor(spacer_levels, levels = new_levels),
+  name = "SPACER",
+  value = 0,
+  textcol = "0"
+)
+
+income_augmented <- bind_rows(income_long, spacer_rows) %>%
+  mutate(Class_spaced = factor(as.character(Class_spaced), levels = new_levels)) %>%
+  arrange(Class_spaced, name != "SPACER")
+
+# --- Plot with connecting lines for contiguous bars ---
+library(ggplot2)
+
+# Prepare a helper dataset for connectors
+stack_order <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
+
+connector_data <- income_augmented %>%
+  filter(name != "SPACER") %>%
+  mutate(name = factor(name, levels = stack_order)) %>%
+  group_by(name) %>%
+  mutate(group_index = row_number()) %>%
+  ungroup()
+
+# Build the plot
+income_plot <- ggplot(income_augmented, aes(
+  x = Class_spaced,
+  y = value,
+  fill = factor(name, levels = stack_order),
+  label = paste0(formatC(value, format = "f", digits = 1), "%")
+)) +
+  geom_bar(
+    stat = "identity",
+    position = "stack",
+    width = bar_spacing_ratio,
+    color = NA,
+    linewidth = 0.2
+  ) +
+  geom_text(
+    data = subset(income_augmented, name != "SPACER"),
+    aes(color = textcol),
+    position = position_stack(vjust = 0.5),
+    size = 3,
+    show.legend = FALSE
+  ) +
+  coord_flip() +
+  scale_x_discrete(expand = expansion(add = c(0.5, 0.5))) +
+  theme(
+    legend.position = "none",
+    plot.margin = margin(20 + bar_chart_offset_y, 40 + bar_chart_offset_x, 0, 20),
+    plot.background = element_rect(fill = NA, color = NA),
+    panel.background = element_rect(fill = NA, color = NA),
+    legend.background = element_rect(fill = NA),
+    legend.key = element_rect(fill = NA),
+    axis.title = element_blank(),
+    text = element_text(family = "mono"),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.border = element_blank(),
+    axis.text.y = element_blank(),
+    plot.title = element_blank(),
+    panel.grid = element_blank()
+  ) +
+  scale_fill_manual(values = c("#cbdfbd", "#8e9aaf", "#d78879", "#a08294", "#161213")) +
+  scale_color_manual(values = c("black", "white")) +
+  labs(fill = "", x = "", y = "")
+
+
+#============================================
+# --- Add connector lines manually using geom_segment ---
+# 2. Build your ggplot bar chart
+# Prepare bridging lines data frame
+# stack_order <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
+#
+# bar_coords_clean <- bar_coords %>%
+#   filter(name != "SPACER") %>%
+#   mutate(name = factor(name, levels = stack_order))
+#
+# connecting_lines <- data.frame()
+#
+# for (i in seq_along(stack_order)[-length(stack_order)]) {
+#   left_cat <- stack_order[i]
+#   right_cat <- stack_order[i + 1]
+#
+#   left_data <- bar_coords_clean %>%
+#     filter(name == left_cat) %>%
+#     select(Class_spaced, x, ymin, ymax)
+#
+#   right_data <- bar_coords_clean %>%
+#     filter(name == right_cat) %>%
+#     select(Class_spaced, x, ymin, ymax)
+#
+#   join_data <- left_data %>%
+#     inner_join(right_data, by = "Class_spaced", suffix = c("_left", "_right"))
+#
+#   lines_df <- join_data %>%
+#     mutate(
+#       x_start = x_left + 0.5,
+#       x_end   = x_right - 0.5,
+#       y_start = (ymin_left + ymax_left) / 2,
+#       y_end   = (ymin_right + ymax_right) / 2
+#     ) %>%
+#     select(x_start, y_start, x_end, y_end)
+#
+#   connecting_lines <- bind_rows(connecting_lines, lines_df)
+# }
+
+#========
+library(dplyr)
+
+# # Define stack order exactly as in your plot fill scale
+# stack_levels <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
+#
+# # Filter out spacers and set factor levels for stacks
+# coords_data <- income_augmented %>%
+#   filter(name != "SPACER") %>%
+#   mutate(name = factor(name, levels = stack_levels)) %>%
+#   group_by(Class_spaced) %>%
+#   arrange(name) %>%
+#   mutate(
+#     ymin = cumsum(value) - value,  # bottom edge of segment
+#     ymax = cumsum(value),          # top edge of segment
+#     x = as.numeric(Class_spaced)   # numeric x-axis position of bar
+#   ) %>%
+#   ungroup()
+#
+# # View the result
+# print(coords_data %>% select(Class_spaced, name, value, x, ymin, ymax))
+# #-----------
+# lines_data <- coords_data %>%
+#   filter(name != "SPACER") %>%
+#   group_by(name) %>%
+#   arrange(x) %>%
+#   mutate(
+#     x_next = lead(x),
+#     ymin_next = lead(ymin)
+#   ) %>%
+#   # Keep only adjacent bars: next bar x should be current x + 2 (because of spacers)
+#   filter(!is.na(x_next), x_next == x + 2) %>%
+#   ungroup() %>%
+#   transmute(
+#     x_start = ymax,     # top of segment in current bar (horizontal position)
+#     y_start = x,        # vertical bar position current
+#     x_end = ymin_next,  # bottom of segment in next bar
+#     y_end = x_next      # vertical bar position next
+#   )
+#-------------
+# === Add Right-Side Vertical Class Labels ===
+#============
+
+
+
+#========
+# --- Render and Position Chart ---
+temp_file <- tempfile(fileext = ".png")
+ggsave(filename = temp_file, plot = income_plot, width = 8, height = 5, dpi = 144, bg = "transparent")
+bar_chart_img <- image_read(temp_file)
+
+bar_chart_width <- cell_width * 5.5
+bar_chart_height <- cell_height * 4 * bar_chart_height_scale  # Scale height
+
+bar_chart_resized <- image_scale(bar_chart_img, paste0(bar_chart_width, "x", bar_chart_height, "!"))
+
+bar_chart_x <- grid_left + cell_width + bar_chart_offset_x - 50
+bar_chart_y <- grid_top + cell_height + bar_chart_offset_y
 
 composite_img <- image_composite(
   composite_img,
-  combined_row,
-  offset = paste0("+", round(cell_x), "+", round(row_y))
+  bar_chart_resized,
+  offset = paste0("+", round(bar_chart_x), "+", round(bar_chart_y))
 )
+# === Add Right-Side Vertical Class Labels ===
 
-# Render data rows (from i=1 to num_rows-1)
-for (i in 1:(num_rows - 1)) {
-  row_y <- table_top_y + header_row_height + ((i - 1) * data_row_height)
+# Define the labels and how many bar rows they span
+right_labels <- c("POOR", "FAIR", "COMFORTABLE", "WELL-TO-DO")
+row_counts   <- c(2, 2, 2, 1)
 
-  if (i == (num_rows - 1)) {
-    # Wrap with str_wrap, then replace spaces with \n to force line breaks
-    wrapped_text <- str_wrap(table_data$Class[i + 1], width = 15)
-    wrapped_text <- gsub(" ", "\n", wrapped_text)
-    class_text <- wrapped_text
-  } else {
-    class_text <- table_data$Class[i + 1]
+# Total rows = 7 actual class rows (no spacers included)
+total_rows <- sum(row_counts)
+
+# Compute height per row (based on the bar chart height)
+row_height <- bar_chart_height / total_rows
+
+# Starting Y for the bottom-most label
+label_start_y <- bar_chart_y
+
+# Label X position (to the right of bar chart)
+label_x <- bar_chart_x + bar_chart_width - 100  # Add padding
+
+# Add labels one by one
+for (i in seq_along(right_labels)) {
+  label_text <- right_labels[i]
+  rows_span <- row_counts[i]
+  label_height <- row_height * rows_span
+  label_y <- label_start_y + (row_height * (sum(row_counts[1:(i-1)]))) + (label_height / 2)
+
+  # 🔧 Adjustment: move "POOR" up 2 rows
+  if (label_text == "POOR") {
+    label_y <- label_y - 2 * row_height
   }
 
-  class_box <- image_blank(width = col_width, height = data_row_height, color = "none")
-  class_box <- image_annotate(
-    class_box,
-    text = class_text,
-    size = 14,
+  # Create and annotate image
+  label_img <- image_blank(width = 100, height = label_height, color = "none")
+  label_img <- image_annotate(
+    label_img,
+    text = label_text,
+    size = ,
     gravity = "center",
     font = "IM FELL English SC",
-    color = "#000000DD"
+    weight = 300,
+    color = "#000000DD",
+    degrees = 270  # Vertical text (bottom to top)
   )
-  class_box_bordered <- image_border(class_box, color = "black", geometry = "1x1")
 
-  income_box <- image_blank(width = col_width, height = data_row_height, color = "none")
-  income_box <- image_annotate(
-    income_box,
-    text = table_data$`Actual Average`[i + 1],
-    size = 14,
-    gravity = "center",
-    font = "IM FELL English SC",
-    color = "#000000DD"
-  )
-  income_box_bordered <- image_border(income_box, color = "black", geometry = "1x1")
-
-  combined_row <- image_append(c(class_box_bordered, income_box_bordered), stack = FALSE)
-
+  # Composite label onto final image
   composite_img <- image_composite(
     composite_img,
-    combined_row,
-    offset = paste0("+", round(cell_x), "+", round(row_y))
+    label_img,
+    offset = paste0("+", round(label_x), "+", round(label_y - label_height / 2))
+  )
+}
+#==========
+# Manually created bridging lines data frame
+
+
+#============
+# print(list(
+#   bar_chart_x = bar_chart_x,
+#   bar_chart_y = bar_chart_y,
+#   bar_chart_height = bar_chart_height,
+#   bar_chart_width = bar_chart_width
+# ))
+#==================
+
+#======================================>>>>
+# Draw the grid and requested horizontal lines inside the left table
+final_img <- image_draw(composite_img)
+
+# Thickness of cell border lines (in pixels)
+line_thickness <- 1
+
+# x positions: start and end of left table (two columns combined)
+x_start <- cell_x
+x_end <- cell_x + 2.8 * col_width
+
+# y positions for horizontal lines, adjustable for rows 1 to 7
+y_positions <- numeric(8)  # 7 rows + header
+
+# row_1 (header row top)
+y_positions[1] <- table_top_y
+
+# row_2 to row_8 (header + 7 rows total)
+for (r in 2:8) {
+  if (r == 2) {
+    y_positions[r] <- table_top_y + header_row_height
+  } else {
+    y_positions[r] <- y_positions[r - 1] + data_row_height
+  }
+}
+
+# Draw thin black horizontal arrows at each row boundary (except header)
+for (y in y_positions[-1]) {
+  arrows(
+    x0 = x_start, y0 = y,
+    x1 = x_end,   y1 = y,
+    col = "black",
+    lwd = line_thickness,
+    length = 0.08,
+    angle = 20,
+    code = 2
   )
 }
 
+# Add one extra arrow extending off the edge under last data row
+y_adjust <- 69
+arrows(
+  x0 = cell_x + 2 * col_width,
+  y0 = y_positions[8] + y_adjust,
+  x1 = cell_x + 3 * col_width - 15,
+  y1 = y_positions[8] + y_adjust,
+  col = "black",
+  lwd = line_thickness,
+  length = 0.08,
+  angle = 20,
+  code = 2
+)
 
-#======================================>>>>
-# Draw the grid
-final_img <- image_draw(composite_img)
+dev.off()  # finish image_draw and save to final_img
 
-# for (i in 0:n_cols) {
-#   x <- grid_left + i * cell_width
-#   segments(x0 = x, y0 = grid_top, x1 = x, y1 = grid_bottom, col = "red", lwd = 2)
-# }
-# 
-# for (j in 0:n_rows) {
-#   y <- grid_top + j * cell_height
-#   segments(x0 = grid_left, y0 = y, x1 = grid_right, y1 = y, col = "red", lwd = 2)
-# }
-
-dev.off()
-
-print(final_img)
-image_write(final_img, "parchment_grid_with_titles.png")
+# Replace composite_img with final_img (arrows added)
+composite_img <- final_img
 
 
+#=========== OUTPUT FILE ============
+# Write output
+image_write(composite_img, path = "output/final_composite.png")
+
+# Optionally display the image
+print(composite_img)
 ```
 
-## 2 - COVID survey - interpret
-<div class="question-box">
-Q2 ....
-</div>
 ```{r}
 #| label: label-me-2
 
