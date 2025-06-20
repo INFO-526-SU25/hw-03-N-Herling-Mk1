@@ -111,6 +111,280 @@ knitr::opts_chunk$set(
 )
 ## ---- end theme set up
 ```
+## (*1*) - function block
+<div class="question-box">
+Q5 ....
+</div>
+```{r}
+#| label: label-me-007
+
+# ............ A function block, to handle Q3,Q4 with minimal code duplication
+
+# - size as a variable
+set_dot_size <- 1
+# Function for the "All" group plot (g0)
+plot_all <- function(data) {
+  ggplot(data, aes(x = explanatory_value, y = mean)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        response = as_labeller(response_labels),
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 11) +
+    labs(
+      title = "COVID-19 Vaccine Attitudes by Demographic Group",
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_text(
+        vjust = 0.5,
+        size = strip_text_size,
+        margin = margin(t = 20, b = 10, r = 5, l = 5)
+      ),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 15, l = 15)
+      ),
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+}
+
+# Function for the Age plot (g1)
+plot_age <- function(data) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 12) +
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 13, l = 13)
+      ),
+      axis.text.y = element_text(size = 10),
+      panel.spacing = unit(1, "lines"),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+}
+
+# Function for the Gender plot (g2)
+plot_gender <- function(data) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 12) +
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 5, l = 6)
+      ),
+      axis.text.y = element_text(size = 10),
+      axis.text.x = element_blank(),
+      panel.spacing = unit(1, "lines"),
+      axis.ticks.x = element_blank()
+    )
+}
+
+# Function for the Race plot (g3)
+plot_race <- function(data) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 12) +
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 10, l = 10)
+      ),
+      axis.text.y = element_text(size = 10),
+      panel.spacing = unit(1, "lines"),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+}
+
+# Function for the Ethnicity plot (g4)
+plot_ethnicity <- function(data, sub_title_specific) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 10) +
+    labs(
+      x = NULL,
+      y = paste0("Mean Likert score\n(Error bars: ", sub_title_specific, ")")
+    ) +
+    theme(
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 4, l = 7)
+      ),
+      axis.text.y = element_text(size = 10),
+      axis.text.x = element_text(size = 10),
+      axis.ticks.x = element_line(),
+      panel.spacing = unit(1, "lines")
+    )
+}
+# ..... prepare the variables.
+# . ethnicity.
+filter_ethnicity_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_ethnicity") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+                                 "1" = "Hispanic/Latino",
+                                 "2" = "Non-Hispanic/Non-Latino"),
+      explanatory_value = factor(explanatory_value, levels = c(
+        "Hispanic/Latino", "Non-Hispanic/Non-Latino"
+      )),
+      explanatory = factor(explanatory, levels = c(
+        "All", "exp_age_bin", "exp_gender", "exp_race", "exp_ethnicity"
+      ))
+    )
+}
+
+# . age
+filter_age_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_age_bin") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+                                 "0" = "<20",
+                                 "20" = "21-25",
+                                 "25" = "26-30",
+                                 "30" = ">30"
+      ),
+      explanatory_value = factor(explanatory_value, levels = c("<20", "21-25", "26-30", ">30")),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
+    )
+}
+
+
+# . gender
+filter_gender_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_gender") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = as.character(explanatory_value),
+      explanatory_value = fct_recode(factor(explanatory_value),
+        "Prefer not to say" = "4",
+        "Non-binary third gender" = "3",
+        "Male" = "0",
+        "Female" = "1"
+      ),
+      explanatory_value = factor(explanatory_value, levels = rev(c(
+        "Prefer not to say",
+        "Non-binary third gender",
+        "Male",
+        "Female"
+      ))),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
+    )
+}
+
+
+# . race
+filter_race_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_race") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+        "1" = "American Indian/Alaska Native",
+        "2" = "Asian",
+        "3" = "Black/African American",
+        "4" = "Native Hawaiian/Other Pacific Islander",
+        "5" = "White"
+      ),
+      explanatory_value = factor(explanatory_value, levels = rev(c(
+        "White",
+        "Native Hawaiian/Other Pacific Islander",
+        "Black/African American",
+        "Asian",
+        "American Indian/Alaska Native"
+      ))),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
+    )
+}
+
+
+```
+
 
 
 ## 1 - Du Bois challenge.
@@ -753,7 +1027,7 @@ cat(glue(
 ))
 
 # Step 2: View to determine the row containing real column names
-View(raw_preview)
+#View(raw_preview)
 
 # Step 3: Based on inspection, set the correct `skip` value
 # (assume row 2 is the real header → skip = 1)
@@ -972,7 +1246,7 @@ covid_survey_summary_stats_by_group <- covid_survey_longer |>
   )
 
 print(covid_survey_summary_stats_by_group)
-View(covid_survey_summary_stats_by_group)
+#View(covid_survey_summary_stats_by_group)
 ```
 <div class="question-box">
 create the df/tibble: covid_survey_summary_stats_all
@@ -995,7 +1269,7 @@ covid_survey_summary_stats_all <- covid_survey_longer |>
   )
 
 print(covid_survey_summary_stats_all)
-View(covid_survey_summary_stats_all)
+#View(covid_survey_summary_stats_all)
 ```
 
 
@@ -1048,128 +1322,34 @@ Q3e - recreate plot
 
 ```{r}
 #| label: label-me-3-e
+#| fig.width: 10   # width in inches
+#| fig.height: 6   # height in inches
+
 # Labels for rows (explanatory variables), including Gender and Race
 explanatory_labels <- c(
   All = "All",
   exp_age_bin = "Age",
   exp_gender = "Gender",
-  exp_race = "Race"    # Added Race label
+  exp_race = "Race"    ,# Added Race label
+  exp_ethnicity = "Ethnicity"
 )
 
-# Start from covid_survey_summary_stats_by_group only - Age
-covid_age_only <- covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_age_bin") %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
-  mutate(
-    # Convert encoded bins to readable labels for age
-    explanatory_value = recode(as.character(explanatory_value),
-                               "0" = "<20",
-                               "20" = "21-25",
-                               "25" = "26-30",
-                               "30" = ">30"
-    ),
-    explanatory_value = factor(explanatory_value, levels = c("<20", "21-25", "26-30", ">30")),
-    # Update explanatory factor to include 'All', 'exp_gender', and 'exp_race'
-    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
-  )
+# - call formatting for encoded data
+covid_age_only <- filter_age_data(covid_survey_summary_stats_by_group)
 
-# - gender
-covid_gender_only <- covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_gender") %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
-  mutate(
-    explanatory_value = as.character(explanatory_value),
-    explanatory_value = fct_recode(factor(explanatory_value),
-                                   "Prefer not to say" = "4",
-                                   "Non-binary third gender" = "3",
-                                   "Male" = "0",
-                                   "Female" = "1"
-    ),
-    explanatory_value = factor(explanatory_value, levels = rev(c(
-      "Prefer not to say",
-      "Non-binary third gender",
-      "Male",
-      "Female"
-    ))),
-    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
-  )
-# ----------- race data
-# New: filter for Race layer data
-covid_race_only <- covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_race") %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
-  mutate(
-    explanatory_value = recode(as.character(explanatory_value),
-                               "1" = "American Indian/Alaska Native",
-                               "2" = "Asian",
-                               "3" = "Black/African American",
-                               "4" = "Native Hawaiian/Other Pacific Islander",
-                               "5" = "White"
-    ),
-    explanatory_value = factor(explanatory_value, levels = rev(c(
-      "White",
-      "Native Hawaiian/Other Pacific Islander",
-      "Black/African American",
-      "Asian",
-      "American Indian/Alaska Native"
-    ))),
-    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
-  )
+covid_gender_only <- filter_gender_data(covid_survey_summary_stats_by_group)
 
+covid_race_only <- filter_race_data(covid_survey_summary_stats_by_group)
 
-# --------
-# New: filter for Ethnicity layer data
-covid_ethnicity_only <- covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_ethnicity") %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
-  mutate(
-    # Map coded ethnicity values to readable labels
-    explanatory_value = recode(as.character(explanatory_value),
-                               "1" = "Hispanic/Latino",
-                               "2" = "Non-Hispanic/Non-Latino"
-    ),
-    # Set vertical display order: top = Hispanic, bottom = Non-Hispanic
-    explanatory_value = factor(explanatory_value, levels = c(
-      "Hispanic/Latino",
-      "Non-Hispanic/Non-Latino"
-    )),
-    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_ethnicity"))
-  )
-#---------- check encoding data.
-# View distinct codes used in the exp_ethnicity variable
-# ethnicity_names <- survey_clean %>%
-#   select(exp_ethnicity) %>%
-#   distinct() %>%
-#   arrange(exp_ethnicity)
-#
-# print(ethnicity_names)
+covid_ethnicity_only <- filter_ethnicity_data(covid_survey_summary_stats_by_group)
 
-#----------- ethnicity
-covid_ethnicity_only <- covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_ethnicity") %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
-  mutate(
-    explanatory_value = recode(as.character(explanatory_value),
-                               "1" = "Hispanic/Latino",
-                               "2" = "Non-Hispanic/Non-Latino"
-    ),
-    explanatory_value = factor(explanatory_value, levels = c(
-      "Hispanic/Latino",
-      "Non-Hispanic/Non-Latino"
-    )),
-    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_ethnicity"))
-  )
-
-
-
-#-----------
 # Label mappings for response
 response_labels <- c(
   resp_safety = "Vaccine is safe",
-  resp_feel_safe_at_work = "Feel safer at work",
+  resp_feel_safe_at_work = "Feel safer\n at work",
   resp_concern_safety = "Concern about \nvaccine safety",
   resp_confidence_science = "Confidence in \nscientific vetting",
-  resp_trust_info = "Trust in vaccine info",
+  resp_trust_info = "Trust in \nvaccine info",
   resp_will_recommend = "Will recommend\nvaccine"
 )
 
@@ -1180,19 +1360,12 @@ covid_age_only <- covid_age_only %>%
 covid_gender_only <- covid_gender_only %>%
   mutate(response = factor(response, levels = names(response_labels)))
 
-
-
-
-#---
 # View distinct codes used in the exp_ethnicity variable
 covid_survey_summary_stats_by_group %>%
   filter(explanatory == "exp_ethnicity") %>%
   mutate(explanatory_value = as.character(explanatory_value)) %>%
   distinct(explanatory_value) %>%
   arrange(explanatory_value)
-
-
-
 
 # Vector controlling heights of each row - add height for race
 row_heights <- c(
@@ -1208,147 +1381,28 @@ covid_all_only <- covid_survey_summary_stats_all %>%
   filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
   mutate(response = factor(response, levels = names(response_labels)))
 
+# - vars for standardizing box size row/col
+# Define variables for strip appearance
+strip_fill_color <- "gray90"
+strip_text_color <- "black"
+strip_text_size <- 10
+strip_text_face <- "plain"
+strip_text_angle_x <- 0
+strip_text_angle_y <- 0
+strip_text_vjust_y <- 0.5
+strip_placement <- "outside"  # already used in your code
 
 
-# First layer: column headers and overall stats ("All")
-g0 <- ggplot(covid_all_only, aes(x = explanatory_value, y = mean)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
-  geom_point(size = 3, color = "black") +
-  coord_flip() +
-  facet_grid(
-    rows = vars(explanatory),
-    cols = vars(response),
-    labeller = labeller(
-      response = as_labeller(response_labels),
-      explanatory = as_labeller(explanatory_labels)
-    )
-  ) +
-  theme_minimal(base_size = 12) +
-  labs(
-    title = "COVID-19 Vaccine Survey: Mean Response by Age",
-    x = NULL,
-    y = NULL  # Removed x-axis label from row_1 here
-  ) +
-  theme(
-    strip.background = element_rect(fill = "gray90", color = "black"),
-    strip.placement = "outside",
-    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
-    axis.text.y = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    panel.spacing = unit(1, "lines")
-  )
-
-# Second layer: Age
-g1 <- ggplot(covid_age_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
-  geom_point(size = 3, color = "black") +
-  coord_flip() +
-  facet_grid(
-    rows = vars(explanatory),
-    cols = vars(response),
-    labeller = labeller(
-      explanatory = as_labeller(explanatory_labels)
-    )
-  ) +
-  theme_minimal(base_size = 12) +
-  labs(
-    x = NULL,
-    y = NULL
-  ) +
-  theme(
-    strip.background = element_rect(fill = "gray90", color = "black"),
-    strip.placement = "outside",
-    strip.text.x = element_blank(),
-    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
-    axis.text.y = element_text(size = 10),
-    panel.spacing = unit(1, "lines"),
-    axis.text.x = element_blank(),     # <-- Removed x-axis text for Age row
-    axis.ticks.x = element_blank()     # <-- Removed x-axis ticks for Age row
-  )
-
-# Third layer: Gender (new)
-g2 <- ggplot(covid_gender_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
-  geom_point(size = 3, color = "black") +
-  coord_flip() +
-  facet_grid(
-    rows = vars(explanatory),
-    cols = vars(response),
-    labeller = labeller(
-      explanatory = as_labeller(explanatory_labels)
-    )
-  ) +
-  theme_minimal(base_size = 12) +
-  labs(
-    x = NULL,
-    y = NULL
-  ) +
-  theme(
-    strip.background = element_rect(fill = "gray90", color = "black"),
-    strip.placement = "outside",
-    strip.text.x = element_blank(),
-    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
-    axis.text.y = element_text(size = 10),
-    axis.text.x = element_blank(),  # <---- here
-    panel.spacing = unit(1, "lines")
-  )
-
-# Fourth layer: Race (new)
-g3 <- ggplot(covid_race_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
-  geom_point(size = 3, color = "black") +
-  coord_flip() +
-  facet_grid(
-    rows = vars(explanatory),
-    cols = vars(response),
-    labeller = labeller(
-      explanatory = as_labeller(explanatory_labels)
-    )
-  ) +
-  theme_minimal(base_size = 12) +
-  labs(
-    x = NULL,
-    y = NULL
-  ) +
-  theme(
-    strip.background = element_rect(fill = "gray90", color = "black"),
-    strip.placement = "outside",
-    strip.text.x = element_blank(),
-    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
-    axis.text.y = element_text(size = 10),
-    panel.spacing = unit(1, "lines"),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank()
-  )
-
-g4 <- ggplot(covid_ethnicity_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
-  geom_point(size = 3, color = "black") +
-  coord_flip() +
-  facet_grid(
-    rows = vars(explanatory),
-    cols = vars(response),
-    labeller = labeller(
-      explanatory = as_labeller(explanatory_labels)
-    )
-  ) +
-  theme_minimal(base_size = 12) +
-  labs(
-    x = NULL,
-    y = "Mean Likert score\n(Error barns range from 10th to 90th percentile"
-  ) +
-  theme(
-    strip.background = element_rect(fill = "gray90", color = "black"),
-    strip.placement = "outside",
-    strip.text.x = element_blank(),  # remove x-axis labels on top (optional)
-    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
-    axis.text.y = element_text(size = 10),  # show y-axis labels clearly
-    panel.spacing = unit(1, "lines"),
-    axis.text.x = element_text(size = 10),  # optional, keep x-axis labels if desired
-    axis.ticks.x = element_line()           # show ticks on x-axis
-  )
-
+# Call some functions
+g0 <- plot_all(covid_all_only)
+# - second layer - Age
+g1 <- plot_age(covid_age_only)
+# - third layer - gender
+g2 <- plot_gender(covid_gender_only)
+# Fourth layer - Race
+g3 <- plot_race(covid_race_only)
+# Fifth layer: Ethnicity (if present)
+g4 <- plot_ethnicity(covid_ethnicity_only,"Error bars in range from 10th to 90th percentile")
 
 # Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
 composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
@@ -1361,18 +1415,208 @@ print(composite_plot)
 
 ## 4 - COVID survey - re-reconstruct
 <div class="question-box">
-Q4 ....
+Q4 ....Make Plot from Q3, but use different end point quarantiles.<br>
+When the error bars represent the 25th and 75th percentiles instead of the 10th and 90th, the intervals become narrower, reflecting a tighter range around the median of the data. This change reduces the apparent variability and uncertainty in responses. Compared to the previous plot, the shorter error bars may make the group differences appear more precise but potentially understate the true variability. Therefore, while the overall trends remain similar, conclusions about the degree of uncertainty should be adjusted to recognize that the interquartile range excludes more extreme values.
+<br>
 </div>
-```{r}
+```{r,echo=FALSE}
 #| label: label-me-4
+#| fig.width: 10   # width in inches
+#| fig.height: 6   # height in inches
 
+# - set quartile variables
+left_quartile <- 0.25
+right_quartile <- 0.75
+
+# ... repeat steps necessary to get the quartile data.
+covid_survey_summary_stats_by_group <- covid_survey_longer |>
+  group_by(explanatory, explanatory_value, response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = left_quartile, na.rm = TRUE),
+    high = quantile(response_value, probs = right_quartile, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+covid_survey_summary_stats_all <- covid_survey_longer |>
+  group_by(response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = left_quartile, na.rm = TRUE),
+    high = quantile(response_value, probs = right_quartile, na.rm = TRUE),
+    explanatory = "All",
+    explanatory_value = factor(""),
+    .groups = "drop"
+  )
+
+# Create the all-summary with the new factor level
+covid_survey_summary_stats_all <- covid_survey_longer |>
+  group_by(response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = left_quartile, na.rm = TRUE),
+    high = quantile(response_value, probs = right_quartile, na.rm = TRUE),
+    explanatory = "All",
+    explanatory_value = factor("", levels = age_levels_with_all),
+    .groups = "drop"
+  )
+
+# Ensure grouped summary has the same levels too
+covid_survey_summary_stats_by_group$explanatory_value <- factor(
+  covid_survey_summary_stats_by_group$explanatory_value,
+  levels = age_levels_with_all
+)
+
+# Bind them safely now
+covid_survey_summary_stats <- bind_rows(
+  covid_survey_summary_stats_all,
+  covid_survey_summary_stats_by_group
+)
+
+# .......
+
+print(covid_survey_summary_stats)
+# - call encoding formatting...
+covid_age_only <- filter_age_data(covid_survey_summary_stats_by_group)
+covid_gender_only <- filter_gender_data(covid_survey_summary_stats_by_group)
+covid_race_only <- filter_race_data(covid_survey_summary_stats_by_group)
+covid_ethnicity_only <- filter_ethnicity_data(covid_survey_summary_stats_by_group)
+# - call graph maker..
+# Call some functions
+g0 <- plot_all(covid_all_only)
+# - second layer - Age
+g1 <- plot_age(covid_age_only)
+# - third layer - gender
+g2 <- plot_gender(covid_gender_only)
+# Fourth layer - Race
+g3 <- plot_race(covid_race_only)
+# Fifth layer: Ethnicity (if present)
+g4 <- plot_ethnicity(covid_ethnicity_only,"Error bars in range from 25th to 75th percentile")
+
+# Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
+composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+print(composite_plot)
 ```
 
 ## 5 - COVID survey - another view
 <div class="question-box">
-Q5 ....
+<b>Q5 ....</b><br>
+COVID survey - another view. Create two bar charts of the Likert data for the six survey questions in from the plot in Exercise 2. <br>This should be a single plot visualizing the percentages of each possible answer, with different questions on the y-axis. Use an appropriate color scale.
+<br><b>Write alt text for your visualization as well.</b>
+
 </div>
+
+
 ```{r}
 #| label: label-me-5
+#| fig.width: 10   # width in inches
+#| fig.height: 6   # height in inches
+
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(viridis)
+
+# Define response labels
+response_labels <- c(
+  resp_safety = "Vaccine is safe",
+  resp_feel_safe_at_work = "Feel safer\n at work",
+  resp_concern_safety = "Concern about \nvaccine safety",
+  resp_confidence_science = "Confidence in \nscientific vetting",
+  resp_trust_info = "Trust in \nvaccine info",
+  resp_will_recommend = "Will recommend\nvaccine"
+)
+
+# Step 1: Compute % response per question and response_value
+likert_summary <- covid_survey_longer %>%
+  group_by(response, response_value) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(response) %>%
+  mutate(percent = count / sum(count) * 100) %>%
+  ungroup() %>%
+  mutate(
+    response = factor(response, levels = unique(response)),  # preserve order
+    response_value = factor(response_value, levels = 1:5)
+  )
+
+# Center percentages for diverging bar chart (v1)
+likert_summary <- likert_summary %>%
+  mutate(
+    centered_percent = case_when(
+      response_value < 3 ~ -percent,
+      response_value == 3 ~ 0,
+      response_value > 3 ~ percent
+    )
+  )
+
+# Compute mean Likert per question
+mean_scores <- covid_survey_longer %>%
+  group_by(response) %>%
+  summarise(mean_value = mean(response_value, na.rm = TRUE))
+
+# Recompute likert_summary with deviation × percent
+likert_summary <- covid_survey_longer %>%
+  group_by(response, response_value) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(response) %>%
+  mutate(percent = count / sum(count) * 100) %>%
+  ungroup() %>%
+  mutate(response_value = as.numeric(as.character(response_value))) %>%
+  left_join(mean_scores, by = "response") %>%
+  mutate(
+    deviation = response_value - mean_value,
+    centered_percent = deviation * percent
+  )
+
+summary(likert_summary)
+
+# Diverging bar chart (centered around mean), with descriptive y-axis labels
+g5 <- ggplot(likert_summary, aes(
+  x = centered_percent,
+  y = fct_rev(fct_relabel(factor(response), ~ response_labels[.x])),
+  fill = factor(response_value)
+)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  scale_fill_manual(
+    values = c("1" = "#d73027", "2" = "#fc8d59", "3" = "#ffffbf", "4" = "#91bfdb", "5" = "#4575b4"),
+    name = "Likert response",
+    labels = c("Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree")
+  ) +
+  labs(
+    title = "Diverging Bar Chart of Likert Responses Centered Around Question Mean",
+    x = "Deviation × Percentage",
+    y = "Survey question"
+  ) +
+  theme_minimal()
+
+print(g5)
+
+# Ensure response_value is factor for 100% chart
+likert_summary <- likert_summary %>%
+  mutate(response_value = factor(response_value, levels = 1:5))
+
+# 100% stacked bar chart, with descriptive y-axis labels
+g100 <- ggplot(likert_summary, aes(
+  x = percent,
+  y = fct_rev(fct_relabel(factor(response), ~ response_labels[.x])),
+  fill = response_value
+)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  scale_fill_manual(
+    values = c("1" = "#d73027", "2" = "#fc8d59", "3" = "#ffffbf", "4" = "#91bfdb", "5" = "#4575b4"),
+    name = "Response",
+    labels = c("Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree")
+  ) +
+  labs(
+    title = "100% Stacked Bar Chart of Likert Responses",
+    x = "Percentage of responses",
+    y = "Survey question"
+  ) +
+  theme_minimal()
+
+print(g100)
+
 
 ```
