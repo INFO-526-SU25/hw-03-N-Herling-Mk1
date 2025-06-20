@@ -8,3 +8,15 @@
   word-break: break-word;
   white-space: normal;
 }
+
+.note-box {
+  background-color: #e0e0e0;
+  margin: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #00BFFF;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+

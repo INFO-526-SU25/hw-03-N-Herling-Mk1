@@ -118,21 +118,24 @@ knitr::opts_chunk$set(
 Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on family budgets split by income classes for 150 families in Atlanta, Georgia. This visualization was originally created using ink and watercolors.
 </div>
 
-```{r,fig.width=12, fig.height=8, out.width="95%"}
+<div class="note-box">
+Note: Since there appears to be some allowable creativity with the features reperesented.
+I left a scale on the bottom of the parchment, and left off the 'connecting lines' connecting the same colored segments together for the stacked bar charts.
+It ended up being a lot of code - to separately construct and place all pieces of the chart together.
+First effort. There may be a more efficient way to re-make the plot?
+.
+I rendered the output image as html - and I cannot git rid of the small 'png 2' label (atm).
+</div>
+
+
+```{r,fig.width=12, fig.height=8, out.width="95%",create_image, fig.cap=""}
 #| label: label-me-1
+#| echo: false
+#| results: asis
 
-pacman::p_load(here)
-source(here("q1\\setup.R"))
-
-library(magick)
-library(dplyr)
-library(scales)
-library(ggplot2)
-library(forcats)
-library(tidyr)
 
 # Load the data
-income_data <- read_csv("data/income.csv")
+income_data <- read_csv("data/income.csv", show_col_types = FALSE)
 
 # --- New: Extract data for col_0, row_1..5 overlay table ---
 table_data <- income_data |>
@@ -144,10 +147,10 @@ header_row <- tibble(Class = "Class", `Actual Average` = "ACTUAL AVERAGE")
 table_data <- bind_rows(header_row, table_data)
 
 # Load parchment image
-background_img <- image_read("images/parchment_sheet.png")
+invisible(background_img <- image_read("images/parchment_sheet.png"))
 
-# Get image dimensions
-info <- image_info(background_img)
+#- Get image dimensions ... for initial examination of how large the background image is.
+invisible(info <- image_info(background_img))
 img_width <- info$width
 img_height <- info$height
 
@@ -428,13 +431,8 @@ for (i in 2:num_rows) {
 
   row_y <- row_y + data_row_height
 }
-#======-------------------------------------------------------------------->> here
-#============== BAR CHART OVERLAY ==================================>>>
+
 #============== BAR CHART OVERLAY WITH CONTROLS ===============================>>>
-
-library(tidyr)
-library(forcats)
-
 # --- Adjustable Variables ---
 bar_chart_height_scale <- 0.75    # Controls vertical compression of bar chart (0 to 1)
 bar_spacing_ratio      <- 0.7     # Controls thickness of bars (height of each bar)
@@ -474,9 +472,6 @@ spacer_rows <- data.frame(
 income_augmented <- bind_rows(income_long, spacer_rows) %>%
   mutate(Class_spaced = factor(as.character(Class_spaced), levels = new_levels)) %>%
   arrange(Class_spaced, name != "SPACER")
-
-# --- Plot with connecting lines for contiguous bars ---
-library(ggplot2)
 
 # Prepare a helper dataset for connectors
 stack_order <- c("OTHER", "TAX", "CLOTHES", "FOOD", "RENT")
@@ -545,8 +540,6 @@ bar_chart_resized <- image_scale(bar_chart_img, paste0(bar_chart_width, "x", bar
 
 bar_chart_x <- grid_left + cell_width + bar_chart_offset_x - 50
 bar_chart_y <- grid_top + cell_height + bar_chart_offset_y
-#------------------ here ----------------------------
-
 #====================================================
 composite_img <- image_composite(
   composite_img,
@@ -624,14 +617,6 @@ for (i in seq_along(right_labels)) {
     offset = paste0("+", round(label_x+70), "+", round(label_y - label_height / 2))
   )
 }
-#============
-# print(list(
-#   bar_chart_x = bar_chart_x,
-#   bar_chart_y = bar_chart_y,
-#   bar_chart_height = bar_chart_height,
-#   bar_chart_width = bar_chart_width
-# ))
-#==================
 
 #======================================>>>>
 # Draw the grid and requested horizontal lines inside the left table
@@ -694,15 +679,39 @@ composite_img <- final_img
 
 #=========== OUTPUT FILE ============
 # Write output
-image_write(composite_img, path = "output/final_composite.png")
+invisible(image_write(composite_img, path = "output/final_composite.png"))
+invisible()
 
 # Optionally display the image
-print(composite_img)
+#print(composite_img)
+# Embed it explicitly into HTML
+cat('<img src="output/final_composite.png" style="width:100%;">')
+#knitr::include_graphics("output/final_composite.png")
 
 ```
 
+## 2 - COVID survey - interpretation
+
+<div class="question-box">
+Q2 - <b>Interpret what’s occurring in the survey, and discuss any results that go against your intuition.</b> <br>In a chart this large, <i>“interpret”</i> (as opposed to simply describing) really means identifying trends in the data.
+<br>
+<b>1. <i>Trust and Profession:</i></b> <br>Medical students showed noticeably more variance in agreement (i.e. a broader distribution of Likert scores) than nursing students with the statement “I trust the information that I have received about the vaccines.” This could be interpreted as a difference in behavior/diagnostic techniques between the two professions.
+<br>
+<b>2. <i>Concern and Age:</i></b> <br>Of note was the general ambivalence towards <i>'safety and side effects'</i>, as represented by the average score of '3' across all age groups. While the distribution was wide for all age groups, the general consensus among those in the medical profession was no concern for the safety involved with the vaccine.
+<br>
+<b>3. <i>Vaccination History and Vaccine Perception:</i></b> <br>Across the board - high <i>'strongly agree'</i> - to the category of 'I will recommend the vaccine to family, friends, and community members.' This would show a very strong trend of trusting the science in the medical community.
+
+<b>4. <i>Counter intuitive/interesting</i></b><br>
+One interesting trend was that responses by gender identity showed subtle but noteworthy divergence. For some response variables—especially those touching on vaccine efficacy or side effects—nonbinary respondents’ scores tended to fall at the extremes, reflecting either more trust or more concern.
+
+Another pattern emerged in the age dimension, with younger respondents appearing to show greater trust in vaccines.
+
+Overall, it's striking that the medical and nursing student community was not in lockstep regarding their interpretations of the science and its safety.
+</div>
+
 ```{r}
 #| label: label-me-2
+#------- no code necessary ..
 
 ```
 
@@ -710,6 +719,135 @@ print(composite_img)
 <div class="question-box">
 Q3 ....
 </div>
+<details>
+
+<summary>Data Analysis - Q1</summary>
+```{r}
+#| label: label-me-3_data_table
+#| echo: false
+#| fig-asp: 0.63
+#| fig-width: 7
+#| 
+#===========
+# Question 3
+#===========
+
+# Step 1: Read CSV without headers to inspect structure
+# - Define "" and "NA" as missing
+raw_preview <- read_csv(
+  "data/covid-survey.csv",
+  col_names = FALSE,
+  na = c("", "NA"),
+  show_col_types = FALSE
+)
+
+# Step 2: View to determine the row containing real column names
+View(raw_preview)
+
+# Step 3: Based on inspection, set the correct `skip` value
+# (assume row 2 is the real header → skip = 1)
+survey_raw <- read_csv(
+  "data/covid-survey.csv",
+  skip = 1,
+  na = c("", "NA"),
+  show_col_types = FALSE
+)
+
+# Step 4: Dynamically get column names
+col_names <- names(survey_raw)
+
+# =====================
+# Diagnostic Summary
+# =====================
+
+# - Overall % missing values (NA)
+total_cells <- nrow(survey_raw) * ncol(survey_raw)
+missing_cells <- sum(is.na(survey_raw))
+missing_pct_total <- round(100 * missing_cells / total_cells, 2)
+
+# - % of rows with at least one NA
+rows_with_na <- survey_raw |> filter(if_any(everything(), is.na))
+pct_rows_with_na <- round(100 * nrow(rows_with_na) / nrow(survey_raw), 2)
+row_indices_with_na <- which(apply(survey_raw, 1, function(x) any(is.na(x))))
+
+# - Rows with more than one NA
+na_per_row <- survey_raw |> apply(1, function(x) sum(is.na(x)))
+rows_with_multiple_na <- which(na_per_row > 1)
+pct_rows_with_multiple_na <- round(100 * length(rows_with_multiple_na) / nrow(survey_raw), 2)
+
+# - Create diagnostic summary table
+dataset_diagnostics <- tibble(
+  Metric = c(
+    "Total % of values missing",
+    "Percent of rows with ≥1 NA",
+    "Row indices with ≥1 NA (first 20)",
+    "Percent of rows with >1 NA",
+    "Row indices with >1 NA (first 20)"
+  ),
+  Value = c(
+    missing_pct_total,
+    pct_rows_with_na,
+    paste(head(row_indices_with_na, 20), collapse = ", "),
+    pct_rows_with_multiple_na,
+    paste(head(rows_with_multiple_na, 20), collapse = ", ")
+  )
+)
+
+# ==============================
+# Quarto-Ready Diagnostic Table
+# ==============================
+
+library(kableExtra)
+
+dataset_diagnostics |>
+  kable(
+    caption = "<span style='font-weight:bold; font-size:1.1em;'>Table 1. Dataset Missing Value Diagnostics</span>",
+    escape = FALSE
+  ) |>
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed")
+  ) |>
+  row_spec(
+    which(dataset_diagnostics$Metric == "Total % of values missing"),
+    background = "#fff3cd"  # Light highlight
+  )
+
+# =======================================
+# Remove rows with any NA values
+# =======================================
+
+# - Original dataset row count
+original_row_count <- nrow(survey_raw)
+
+# - Create new tibble with complete cases only
+survey_clean <- survey_raw |> filter(if_all(everything(), ~ !is.na(.x)))
+
+# - Number of rows removed
+rows_removed <- original_row_count - nrow(survey_clean)
+
+# - User alert with clear summary
+cat(
+  glue::glue(
+    "✅ Rows with at least one NA have been removed.\n",
+    "Original dataset rows: {original_row_count}\n",
+    "Rows removed: {rows_removed}\n",
+    "Cleaned dataset size: {nrow(survey_clean)} rows × {ncol(survey_clean)} columns\n"
+  )
+)
+
+# - Print cleaned data frame dimensions (optional redundancy)
+print(dim(survey_clean))
+
+# - Optional: Preview cleaned data (first 5 rows)
+#print(head(survey_clean, 5))
+
+
+```
+</details>
+
+
+
 ```{r}
 #| label: label-me-3
 
