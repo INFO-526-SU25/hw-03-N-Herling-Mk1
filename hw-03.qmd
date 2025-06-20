@@ -741,6 +741,17 @@ raw_preview <- read_csv(
   show_col_types = FALSE
 )
 
+# - Step 1a: print the dim of the original df.
+library(glue)
+
+original_dim <- dim(raw_preview)
+
+cat(glue(
+  "📄 The original data frame (raw_preview) has:\n",
+  "- {original_dim[1]} rows\n",
+  "- {original_dim[2]} columns\n"
+))
+
 # Step 2: View to determine the row containing real column names
 View(raw_preview)
 
@@ -814,33 +825,47 @@ dataset_diagnostics |>
   )
 
 # =======================================
-# Remove rows with any NA values
+# Remove rows that are entirely NA except for response_id
 # =======================================
 
 # - Original dataset row count
 original_row_count <- nrow(survey_raw)
 
-# - Create new tibble with complete cases only
-survey_clean <- survey_raw |> filter(if_all(everything(), ~ !is.na(.x)))
+# - Detect rows where all columns *except* response_id are NA
+cols_except_response_id <- setdiff(names(survey_raw), "response_id")
+rows_to_remove <- which(
+  survey_raw |>
+    select(all_of(cols_except_response_id)) |>
+    apply(1, function(x) all(is.na(x)))
+)
+
+# - Remove the rows
+survey_clean <- survey_raw[-rows_to_remove, ]
 
 # - Number of rows removed
-rows_removed <- original_row_count - nrow(survey_clean)
+rows_removed <- length(rows_to_remove)
 
 # - User alert with clear summary
 cat(
   glue::glue(
-    "✅ Rows with at least one NA have been removed.\n",
+    "✅ Rows with only `response_id` and all other fields missing have been removed.\n",
     "Original dataset rows: {original_row_count}\n",
     "Rows removed: {rows_removed}\n",
     "Cleaned dataset size: {nrow(survey_clean)} rows × {ncol(survey_clean)} columns\n"
   )
 )
 
-# - Print cleaned data frame dimensions (optional redundancy)
-print(dim(survey_clean))
+ # - Print row numbers removed in a 4-column layout
+if (rows_removed > 0) {
+  library(knitr)
+  formatted_rows <- paste0("row:", rows_to_remove)
+  padded_length <- ceiling(length(formatted_rows) / 4) * 4
+  formatted_rows <- c(formatted_rows, rep("", padded_length - length(formatted_rows)))
+  removed_matrix <- matrix(formatted_rows, ncol = 4, byrow = TRUE)
 
-# - Optional: Preview cleaned data (first 5 rows)
-#print(head(survey_clean, 5))
+  cat("\n\n**Rows_Removed**\n")
+  kable(removed_matrix, col.names = NULL, align = "l")
+}
 
 
 ```
@@ -849,9 +874,299 @@ print(dim(survey_clean))
 
 
 ```{r}
-#| label: label-me-3
+#| label: label-me-3a
+
+# - Step 1a: print the dim of the original df.
+original_dim <- dim(raw_preview)
+
+cat(glue(
+  "📄 The original data frame (`raw_preview`) has:\n",
+  "- {original_dim[1]} rows\n",
+  "- {original_dim[2]} columns\n\n",
+  "⚠️  Rows with no available data (i.e., only `response_id` present)\n will be removed in preprocessing.\n",
+  "\n✅ **New Dimensions** of `survey_clean` after cleaning:\n",
+  "📊 Rows: {nrow(survey_clean)}\n",
+  "📐 Columns: {ncol(survey_clean)}\n"
+))
+#-- ... --- based on info in pdf file and .csv .. encode the following
+# exp_profession...........	
+# exp_flu_vax..............	
+# exp_gender............... Q2 What is your gender?	
+# exp_race................. Q3 What is your race?	
+# exp_ethnicity............ Q4 What is your ethnicity?	
+# exp_age_bin.............. Q1 What is your age?	
+# exp_already_vax..........	
+# resp_safety.............. Q26 Based on my understanding, I believe the vaccine is safe.	
+# resp_confidence_science.. Q34 I am confident in the scientific vetting process for the new COVID vaccines.	
+# resp_concern_safety...... Q27 I am concerned about the safety and side effects of the vaccine.	
+# resp_feel_safe_at_work... Q28 Getting the vaccine will make me feel safer at work.	
+# resp_will_recommend...... Q29 I will recommend the vaccine to family, friends, and community members.	
+# resp_trust_info.......... Q31 I trust the information that I have received about the COVID-19 vaccines.
+
+covid_survey_longer <- survey_clean |>
+  pivot_longer(
+    cols = starts_with("exp_"),
+    names_to = "explanatory",
+    values_to = "explanatory_value"
+  ) |>
+  mutate(explanatory_value = as.factor(explanatory_value)) |>
+  filter(!is.na(explanatory_value)) |>
+  pivot_longer(
+    cols = starts_with("resp_"),
+    names_to = "response",
+    values_to = "response_value"
+  )
+
+print(covid_survey_longer)
 
 ```
+<div class="question-box">
+<b>Q3 code explanation:</b><br>
+<div class="code-container">
+<code>
+covid_survey_longer &lt;- covid_survey |&gt;
+  pivot_longer(
+    cols = starts_with("exp_"),
+    names_to = "explanatory",
+    values_to = "explanatory_value"
+  ) |&gt;
+  filter(!is.na(explanatory_value)) |&gt;
+  pivot_longer(
+    cols = starts_with("resp_"),
+    names_to = "response",
+    values_to = "response_value"
+  )
+</code>
+</div><br>
+  <b>first pivot_longer():</b><br>
+  Converts all columns that start with "exp_" (e.g., exp_profession, exp_gender, etc.) from wide format into long format.<br>
+Creates two new columns:<br>
+explanatory: holds the original column names (like "exp_profession")<br>
+explanatory_value: holds the actual values from those columns (like "Nursing" or "1")<br>
+  <b>second pivot_longer():</b><br>
+After already pivoting the explanatory variables, this takes the remaining<br> response variables (resp_safety, resp_confidence_science, etc.) and pivots them long as well.<br>
+Creates two new columns:<br>
+response: original column name<br>
+response_value: corresponding value<br>
+</div>
+
+
+<div class="question-box">
+create the df/tibble: covid_survey_summary_stats_by_group
+</div>
+```{r}
+#| label: label-me-3b
+# - group the data - by explanatory, explanatory_value, and response calc.
+# - the following stats:
+# - mean of the response_value
+# - low 10th percentile of the response_value
+# - high 90th percentile of the response_value
+# - rename the df coivd_survey_summart_stats_by_group
+covid_survey_summary_stats_by_group <- covid_survey_longer |>
+  group_by(explanatory, explanatory_value, response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = 0.10, na.rm = TRUE),
+    high = quantile(response_value, probs = 0.90, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+print(covid_survey_summary_stats_by_group)
+View(covid_survey_summary_stats_by_group)
+```
+<div class="question-box">
+create the df/tibble: covid_survey_summary_stats_all
+</div>
+
+```{r}
+#| label: label-me-3c
+
+library(dplyr)
+
+covid_survey_summary_stats_all <- covid_survey_longer |>
+  group_by(response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = 0.10, na.rm = TRUE),
+    high = quantile(response_value, probs = 0.90, na.rm = TRUE),
+    explanatory = "All",
+    explanatory_value = factor(""),
+    .groups = "drop"
+  )
+
+print(covid_survey_summary_stats_all)
+View(covid_survey_summary_stats_all)
+```
+
+
+<div class="question-box">
+Bind the two df's<br>
+create the df/tibble: covid_summary_of_stats
+</div>
+```{r}
+#| label: label-me-3d
+
+
+# Get existing levels from grouped data
+age_levels <- levels(covid_survey_summary_stats_by_group$explanatory_value)
+
+# Add a new level to represent the 'All' group
+age_levels_with_all <- c(age_levels, "")
+
+# Create the all-summary with the new factor level
+covid_survey_summary_stats_all <- covid_survey_longer |>
+  group_by(response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    low = quantile(response_value, probs = 0.10, na.rm = TRUE),
+    high = quantile(response_value, probs = 0.90, na.rm = TRUE),
+    explanatory = "All",
+    explanatory_value = factor("", levels = age_levels_with_all),
+    .groups = "drop"
+  )
+
+# Ensure grouped summary has the same levels too
+covid_survey_summary_stats_by_group$explanatory_value <- factor(
+  covid_survey_summary_stats_by_group$explanatory_value,
+  levels = age_levels_with_all
+)
+
+# Bind them safely now
+covid_survey_summary_stats <- bind_rows(
+  covid_survey_summary_stats_all,
+  covid_survey_summary_stats_by_group
+)
+
+print(covid_survey_summary_stats)
+
+
+```
+
+<div class="question-box">
+Q3e - recreate plot 
+</div>
+```{r}
+#| label: label-me-3e
+
+
+response_labels <- c(
+  resp_safety = "Based on my understanding,\nI believe the vaccine is safe",
+  resp_confidence_science = "I am confident in the\nscientific vetting process",
+  resp_feel_safe_at_work = "Getting the vaccine will\nmake me feel safer at work",
+  resp_will_recommend = "I will recommend the vaccine\nto family, friends, and community",
+  resp_trust_info = "I trust the information\nI have received about vaccines",
+  resp_concern_safety = "I am concerned about the safety\nand side effects of the vaccine"
+)
+
+explanatory_labels <- c(
+  exp_age_bin = "Age",
+  exp_gender = "Gender",
+  exp_race = "Race",
+  exp_ethnicity = "Ethnicity",
+  exp_profession = "Profession",
+  exp_already_vax = "Had COVID vaccine",
+  exp_flu_vax = "Had flu vaccine this year",
+  All = "All respondents"  # Optional: used if you're keeping the "All" group
+)
+
+# Filter out "All" if you want to plot only grouped data:
+# covid_survey_summary_stats <- covid_survey_summary_stats %>%
+#   filter(explanatory != "All")
+
+g1 <- library(ggplot2)
+library(dplyr)
+library(forcats)
+
+# Label mappings
+response_labels <- c(
+  resp_safety = "Vaccine is safe",
+  resp_confidence_science = "Confidence in scientific vetting",
+  resp_feel_safe_at_work = "Vaccine makes me feel safer at work",
+  resp_will_recommend = "Will recommend vaccine",
+  resp_trust_info = "Trust in vaccine info",
+  resp_concern_safety = "Concern about vaccine safety"
+)
+
+explanatory_labels <- c(
+  exp_age_bin = "Age",
+  exp_gender = "Gender",
+  exp_race = "Race",
+  exp_ethnicity = "Ethnicity",
+  exp_profession = "Profession",
+  exp_already_vax = "Had COVID vaccine",
+  exp_flu_vax = "Had flu vaccine this year",
+  All = "All respondents"
+)
+
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(scales)
+
+# Define label mappings
+response_labels <- c(
+  resp_safety = "Vaccine is safe",
+  resp_confidence_science = "Confidence in scientific vetting",
+  resp_feel_safe_at_work = "Feel safer at work",
+  resp_will_recommend = "Will recommend vaccine",
+  resp_trust_info = "Trust in vaccine info",
+  resp_concern_safety = "Concern about vaccine safety"
+)
+
+explanatory_labels <- c(
+  exp_age_bin = "Age",
+  exp_gender = "Gender",
+  exp_race = "Race",
+  exp_ethnicity = "Ethnicity",
+  exp_profession = "Profession",
+  exp_already_vax = "Had COVID vaccine",
+  exp_flu_vax = "Had flu vaccine this year",
+  All = "All respondents"
+)
+
+# Clean plot data: ensure explanatory_value is a factor (for consistent order)
+covid_survey_summary_stats <- covid_survey_summary_stats %>%
+  mutate(
+    explanatory_value = fct_inorder(as.character(explanatory_value)),
+    response = factor(response, levels = names(response_labels)),
+    explanatory = factor(explanatory, levels = names(explanatory_labels))
+  )
+
+# Build the plot
+covid_subset <- covid_survey_summary_stats %>%
+  filter(explanatory %in% c("All", "exp_age_bin")) %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high))
+
+g1 <- ggplot(covid_subset, aes(x = explanatory_value, y = mean)) +
+  geom_col(fill = "steelblue") +
+  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  facet_grid(
+    rows = vars(explanatory),
+    cols = vars(response),
+    labeller = labeller(
+      response = as_labeller(response_labels),
+      explanatory = as_labeller(explanatory_labels)
+    ),
+    switch = "y"
+  ) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "COVID-19 Vaccine Survey: Overall vs Age Groups",
+    x = "Group",
+    y = "Mean Response (1–5 Likert)"
+  ) +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = NA),
+    strip.placement = "outside",
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.spacing = unit(1, "lines")
+  )
+
+
+plot(g1)
+
+```
+
 
 ## 4 - COVID survey - re-reconstruct
 <div class="question-box">
