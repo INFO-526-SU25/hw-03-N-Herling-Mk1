@@ -723,7 +723,7 @@ Q3 ....
 
 <summary>Data Analysis - Q1</summary>
 ```{r}
-#| label: label-me-3_data_table
+#| label: label-me-3-data-table
 #| echo: false
 #| fig-asp: 0.63
 #| fig-width: 7
@@ -1045,125 +1045,316 @@ print(covid_survey_summary_stats)
 <div class="question-box">
 Q3e - recreate plot 
 </div>
+
 ```{r}
-#| label: label-me-3e
-
-
-response_labels <- c(
-  resp_safety = "Based on my understanding,\nI believe the vaccine is safe",
-  resp_confidence_science = "I am confident in the\nscientific vetting process",
-  resp_feel_safe_at_work = "Getting the vaccine will\nmake me feel safer at work",
-  resp_will_recommend = "I will recommend the vaccine\nto family, friends, and community",
-  resp_trust_info = "I trust the information\nI have received about vaccines",
-  resp_concern_safety = "I am concerned about the safety\nand side effects of the vaccine"
-)
-
+#| label: label-me-3-e
+# Labels for rows (explanatory variables), including Gender and Race
 explanatory_labels <- c(
+  All = "All",
   exp_age_bin = "Age",
   exp_gender = "Gender",
-  exp_race = "Race",
-  exp_ethnicity = "Ethnicity",
-  exp_profession = "Profession",
-  exp_already_vax = "Had COVID vaccine",
-  exp_flu_vax = "Had flu vaccine this year",
-  All = "All respondents"  # Optional: used if you're keeping the "All" group
+  exp_race = "Race"    # Added Race label
 )
 
-# Filter out "All" if you want to plot only grouped data:
-# covid_survey_summary_stats <- covid_survey_summary_stats %>%
-#   filter(explanatory != "All")
-
-g1 <- library(ggplot2)
-library(dplyr)
-library(forcats)
-
-# Label mappings
-response_labels <- c(
-  resp_safety = "Vaccine is safe",
-  resp_confidence_science = "Confidence in scientific vetting",
-  resp_feel_safe_at_work = "Vaccine makes me feel safer at work",
-  resp_will_recommend = "Will recommend vaccine",
-  resp_trust_info = "Trust in vaccine info",
-  resp_concern_safety = "Concern about vaccine safety"
-)
-
-explanatory_labels <- c(
-  exp_age_bin = "Age",
-  exp_gender = "Gender",
-  exp_race = "Race",
-  exp_ethnicity = "Ethnicity",
-  exp_profession = "Profession",
-  exp_already_vax = "Had COVID vaccine",
-  exp_flu_vax = "Had flu vaccine this year",
-  All = "All respondents"
-)
-
-library(ggplot2)
-library(dplyr)
-library(forcats)
-library(scales)
-
-# Define label mappings
-response_labels <- c(
-  resp_safety = "Vaccine is safe",
-  resp_confidence_science = "Confidence in scientific vetting",
-  resp_feel_safe_at_work = "Feel safer at work",
-  resp_will_recommend = "Will recommend vaccine",
-  resp_trust_info = "Trust in vaccine info",
-  resp_concern_safety = "Concern about vaccine safety"
-)
-
-explanatory_labels <- c(
-  exp_age_bin = "Age",
-  exp_gender = "Gender",
-  exp_race = "Race",
-  exp_ethnicity = "Ethnicity",
-  exp_profession = "Profession",
-  exp_already_vax = "Had COVID vaccine",
-  exp_flu_vax = "Had flu vaccine this year",
-  All = "All respondents"
-)
-
-# Clean plot data: ensure explanatory_value is a factor (for consistent order)
-covid_survey_summary_stats <- covid_survey_summary_stats %>%
+# Start from covid_survey_summary_stats_by_group only - Age
+covid_age_only <- covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_age_bin") %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
   mutate(
-    explanatory_value = fct_inorder(as.character(explanatory_value)),
-    response = factor(response, levels = names(response_labels)),
-    explanatory = factor(explanatory, levels = names(explanatory_labels))
+    # Convert encoded bins to readable labels for age
+    explanatory_value = recode(as.character(explanatory_value),
+                               "0" = "<20",
+                               "20" = "21-25",
+                               "25" = "26-30",
+                               "30" = ">30"
+    ),
+    explanatory_value = factor(explanatory_value, levels = c("<20", "21-25", "26-30", ">30")),
+    # Update explanatory factor to include 'All', 'exp_gender', and 'exp_race'
+    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
   )
 
-# Build the plot
-covid_subset <- covid_survey_summary_stats %>%
-  filter(explanatory %in% c("All", "exp_age_bin")) %>%
-  filter(is.finite(mean), is.finite(low), is.finite(high))
+# - gender
+covid_gender_only <- covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_gender") %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+  mutate(
+    explanatory_value = as.character(explanatory_value),
+    explanatory_value = fct_recode(factor(explanatory_value),
+                                   "Prefer not to say" = "4",
+                                   "Non-binary third gender" = "3",
+                                   "Male" = "0",
+                                   "Female" = "1"
+    ),
+    explanatory_value = factor(explanatory_value, levels = rev(c(
+      "Prefer not to say",
+      "Non-binary third gender",
+      "Male",
+      "Female"
+    ))),
+    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
+  )
+# ----------- race data
+# New: filter for Race layer data
+covid_race_only <- covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_race") %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+  mutate(
+    explanatory_value = recode(as.character(explanatory_value),
+                               "1" = "American Indian/Alaska Native",
+                               "2" = "Asian",
+                               "3" = "Black/African American",
+                               "4" = "Native Hawaiian/Other Pacific Islander",
+                               "5" = "White"
+    ),
+    explanatory_value = factor(explanatory_value, levels = rev(c(
+      "White",
+      "Native Hawaiian/Other Pacific Islander",
+      "Black/African American",
+      "Asian",
+      "American Indian/Alaska Native"
+    ))),
+    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race"))
+  )
 
-g1 <- ggplot(covid_subset, aes(x = explanatory_value, y = mean)) +
-  geom_col(fill = "steelblue") +
+
+# --------
+# New: filter for Ethnicity layer data
+covid_ethnicity_only <- covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_ethnicity") %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+  mutate(
+    # Map coded ethnicity values to readable labels
+    explanatory_value = recode(as.character(explanatory_value),
+                               "1" = "Hispanic/Latino",
+                               "2" = "Non-Hispanic/Non-Latino"
+    ),
+    # Set vertical display order: top = Hispanic, bottom = Non-Hispanic
+    explanatory_value = factor(explanatory_value, levels = c(
+      "Hispanic/Latino",
+      "Non-Hispanic/Non-Latino"
+    )),
+    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_ethnicity"))
+  )
+#---------- check encoding data.
+# View distinct codes used in the exp_ethnicity variable
+# ethnicity_names <- survey_clean %>%
+#   select(exp_ethnicity) %>%
+#   distinct() %>%
+#   arrange(exp_ethnicity)
+#
+# print(ethnicity_names)
+
+#----------- ethnicity
+covid_ethnicity_only <- covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_ethnicity") %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+  mutate(
+    explanatory_value = recode(as.character(explanatory_value),
+                               "1" = "Hispanic/Latino",
+                               "2" = "Non-Hispanic/Non-Latino"
+    ),
+    explanatory_value = factor(explanatory_value, levels = c(
+      "Hispanic/Latino",
+      "Non-Hispanic/Non-Latino"
+    )),
+    explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_ethnicity"))
+  )
+
+
+
+#-----------
+# Label mappings for response
+response_labels <- c(
+  resp_safety = "Vaccine is safe",
+  resp_feel_safe_at_work = "Feel safer at work",
+  resp_concern_safety = "Concern about \nvaccine safety",
+  resp_confidence_science = "Confidence in \nscientific vetting",
+  resp_trust_info = "Trust in vaccine info",
+  resp_will_recommend = "Will recommend\nvaccine"
+)
+
+# Reorder response factor levels to match response_labels
+covid_age_only <- covid_age_only %>%
+  mutate(response = factor(response, levels = names(response_labels)))
+
+covid_gender_only <- covid_gender_only %>%
+  mutate(response = factor(response, levels = names(response_labels)))
+
+
+
+
+#---
+# View distinct codes used in the exp_ethnicity variable
+covid_survey_summary_stats_by_group %>%
+  filter(explanatory == "exp_ethnicity") %>%
+  mutate(explanatory_value = as.character(explanatory_value)) %>%
+  distinct(explanatory_value) %>%
+  arrange(explanatory_value)
+
+
+
+
+# Vector controlling heights of each row - add height for race
+row_heights <- c(
+  0.5,  # - 'All' row height — adjust as needed
+  3,    # - 'exp_age_bin' row height
+  3,    # - 'exp_gender' row height - adjust as desired
+  3,    # - 'exp_race' row height - new Race row
+  3     # - ethnicity
+)
+
+# Reorder response factor levels for 'All' layer
+covid_all_only <- covid_survey_summary_stats_all %>%
+  filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+  mutate(response = factor(response, levels = names(response_labels)))
+
+
+
+# First layer: column headers and overall stats ("All")
+g0 <- ggplot(covid_all_only, aes(x = explanatory_value, y = mean)) +
   geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  geom_point(size = 3, color = "black") +
+  coord_flip() +
   facet_grid(
     rows = vars(explanatory),
     cols = vars(response),
     labeller = labeller(
       response = as_labeller(response_labels),
       explanatory = as_labeller(explanatory_labels)
-    ),
-    switch = "y"
+    )
   ) +
   theme_minimal(base_size = 12) +
   labs(
-    title = "COVID-19 Vaccine Survey: Overall vs Age Groups",
-    x = "Group",
-    y = "Mean Response (1–5 Likert)"
+    title = "COVID-19 Vaccine Survey: Mean Response by Age",
+    x = NULL,
+    y = NULL  # Removed x-axis label from row_1 here
   ) +
   theme(
-    strip.background = element_rect(fill = "gray90", color = NA),
+    strip.background = element_rect(fill = "gray90", color = "black"),
     strip.placement = "outside",
-    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
+    axis.text.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
     panel.spacing = unit(1, "lines")
   )
 
+# Second layer: Age
+g1 <- ggplot(covid_age_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  geom_point(size = 3, color = "black") +
+  coord_flip() +
+  facet_grid(
+    rows = vars(explanatory),
+    cols = vars(response),
+    labeller = labeller(
+      explanatory = as_labeller(explanatory_labels)
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black"),
+    strip.placement = "outside",
+    strip.text.x = element_blank(),
+    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
+    axis.text.y = element_text(size = 10),
+    panel.spacing = unit(1, "lines"),
+    axis.text.x = element_blank(),     # <-- Removed x-axis text for Age row
+    axis.ticks.x = element_blank()     # <-- Removed x-axis ticks for Age row
+  )
 
-plot(g1)
+# Third layer: Gender (new)
+g2 <- ggplot(covid_gender_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  geom_point(size = 3, color = "black") +
+  coord_flip() +
+  facet_grid(
+    rows = vars(explanatory),
+    cols = vars(response),
+    labeller = labeller(
+      explanatory = as_labeller(explanatory_labels)
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black"),
+    strip.placement = "outside",
+    strip.text.x = element_blank(),
+    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
+    axis.text.y = element_text(size = 10),
+    axis.text.x = element_blank(),  # <---- here
+    panel.spacing = unit(1, "lines")
+  )
+
+# Fourth layer: Race (new)
+g3 <- ggplot(covid_race_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  geom_point(size = 3, color = "black") +
+  coord_flip() +
+  facet_grid(
+    rows = vars(explanatory),
+    cols = vars(response),
+    labeller = labeller(
+      explanatory = as_labeller(explanatory_labels)
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black"),
+    strip.placement = "outside",
+    strip.text.x = element_blank(),
+    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
+    axis.text.y = element_text(size = 10),
+    panel.spacing = unit(1, "lines"),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+g4 <- ggplot(covid_ethnicity_only, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+  geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+  geom_point(size = 3, color = "black") +
+  coord_flip() +
+  facet_grid(
+    rows = vars(explanatory),
+    cols = vars(response),
+    labeller = labeller(
+      explanatory = as_labeller(explanatory_labels)
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  labs(
+    x = NULL,
+    y = "Mean Likert score\n(Error barns range from 10th to 90th percentile"
+  ) +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black"),
+    strip.placement = "outside",
+    strip.text.x = element_blank(),  # remove x-axis labels on top (optional)
+    strip.text.y.right = element_text(angle = 0, vjust = 0.5),
+    axis.text.y = element_text(size = 10),  # show y-axis labels clearly
+    panel.spacing = unit(1, "lines"),
+    axis.text.x = element_text(size = 10),  # optional, keep x-axis labels if desired
+    axis.ticks.x = element_line()           # show ticks on x-axis
+  )
+
+
+# Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
+composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+print(composite_plot)
 
 ```
 
