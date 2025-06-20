@@ -40,3 +40,15 @@
 }
 
 
+/* smaller text */
+.text-container {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 8px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.85em; /* Adjust this value to make text smaller or larger */
+  color: #2d2d2d;
+  margin: 1em 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
