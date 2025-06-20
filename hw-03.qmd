@@ -53,7 +53,8 @@ pkgs <- c(
   "cowplot",
   "magick",
   "forcats",
-  "stringr"
+  "stringr",
+  "viridis"
 )
 # - load from the character array/vector
 pacman::p_load(char=pkgs)
@@ -111,9 +112,9 @@ knitr::opts_chunk$set(
 )
 ## ---- end theme set up
 ```
-## (*1*) - function block
+## (*@*) - function block
 <div class="question-box">
-Q5 ....
+In an effort to reduce repeating code a function block was created.
 </div>
 ```{r}
 #| label: label-me-007
@@ -395,14 +396,14 @@ Du Bois challenge. Recreate the following visualization by W.E.B. Du Bois on fam
 <div class="note-box">
 Note: Since there appears to be some allowable creativity with the features reperesented.
 I left a scale on the bottom of the parchment, and left off the 'connecting lines' connecting the same colored segments together for the stacked bar charts.
-It ended up being a lot of code - to separately construct and place all pieces of the chart together.
+It ended up being <b>a lot</b> of code - to separately construct and place all pieces of the chart together.
 First effort. There may be a more efficient way to re-make the plot?
 .
 I rendered the output image as html - and I cannot git rid of the small 'png 2' label (atm).
 </div>
 
 
-```{r,fig.width=12, fig.height=8, out.width="95%",create_image, fig.cap=""}
+```{r,fig.width=12, fig.height=8, out.width="95%"}
 #| label: label-me-1
 #| echo: false
 #| results: asis
@@ -503,7 +504,7 @@ composite_img <- image_composite(
 )
 
 
-#========
+# ................
 # Add column titles (RENT, FOOD, etc.)
 top_col_titles <- c("RENT", "FOOD", "CLOTHES", "DIRECT TAXES", "OTHER EXPENSES AND SAVINGS")
 
@@ -610,8 +611,8 @@ for (i in 1:5) {
     offset = paste0("+", round(footer_x), "+", round(footer_y))
   )
 }
-#=====--------------------------------------------------------------------->>> checked
-#============== LEFT COLUMN TABLE ==================================>>>
+#--------------------------------------------------------------------->>> checked
+#.... LEFT COLUMN TABLE ==================================>>>
 # --- NEW: Render table in col_0, rows 0 to 6 (header + 6 rows) ---
 # --- UPDATED: Render table spanning from row_1 to row_5 (entire vertical height of 4 grid rows) ---
 library(stringr)  # make sure stringr is loaded
@@ -706,7 +707,7 @@ for (i in 2:num_rows) {
   row_y <- row_y + data_row_height
 }
 
-#============== BAR CHART OVERLAY WITH CONTROLS ===============================>>>
+#... BAR CHART OVERLAY WITH CONTROLS ===============================>>>
 # --- Adjustable Variables ---
 bar_chart_height_scale <- 0.75    # Controls vertical compression of bar chart (0 to 1)
 bar_spacing_ratio      <- 0.7     # Controls thickness of bars (height of each bar)
@@ -814,7 +815,7 @@ bar_chart_resized <- image_scale(bar_chart_img, paste0(bar_chart_width, "x", bar
 
 bar_chart_x <- grid_left + cell_width + bar_chart_offset_x - 50
 bar_chart_y <- grid_top + cell_height + bar_chart_offset_y
-#====================================================
+# ... render images on top of each other..
 composite_img <- image_composite(
   composite_img,
   bar_chart_resized,
@@ -982,6 +983,16 @@ Another pattern emerged in the age dimension, with younger respondents appearing
 
 Overall, it's striking that the medical and nursing student community was not in lockstep regarding their interpretations of the science and its safety.
 </div>
+
+<div class="note-box">
+A recreation of 'Income and Expenditure of 150 Negro Familes in Atlanta, GA, USA'<br>
+Some re-interpretations were taken:<br>
+- connecting lines between stacked bar chart areas were left off<br>
+- slightly modified '}' grouping labels were used on right hand side of bar charts.<br>
+- an axis was rendered on the bottom to help visualize scale.<br>
+</div>
+
+
 
 ```{r}
 #| label: label-me-2
@@ -1502,22 +1513,19 @@ print(composite_plot)
 
 ## 5 - COVID survey - another view
 <div class="question-box">
-<b>Q5 ....</b><br>
-COVID survey - another view. Create two bar charts of the Likert data for the six survey questions in from the plot in Exercise 2. <br>This should be a single plot visualizing the percentages of each possible answer, with different questions on the y-axis. Use an appropriate color scale.
+<b>Q5a ....</b><br>
+COVID survey - another view. Create two bar charts of the Likert data for the six survey questions in from the plot in Exercise 2. This should be a single plot visualizing the percentages of each possible answer, with different questions on the y-axis. Use an appropriate color scale.<br>
+
+<br><b>a. Create a diverging bar chart. Write alt text for your visualization as well.</b>
 <br><b>Write alt text for your visualization as well.</b>
 
 </div>
 
 
 ```{r}
-#| label: label-me-5
+#| label: label-me-5a
 #| fig.width: 10   # width in inches
 #| fig.height: 6   # height in inches
-
-library(ggplot2)
-library(dplyr)
-library(forcats)
-library(viridis)
 
 # Define response labels
 response_labels <- c(
@@ -1593,6 +1601,24 @@ g5 <- ggplot(likert_summary, aes(
 
 print(g5)
 
+```
+<div class="note-box">
+<b>Q5a ....alt text description</b><br>
+Alt text: A diverging bar chart visualizes Likert-scale responses to six COVID-19 vaccine-related statements. Each statement is represented by a horizontal bar segmented by response categories: strongly disagree, disagree, neutral, agree, strongly agree, and NA, each in a distinct color. The x-axis shows a centered scale ranging from -60 to 60, indicating deviation from the mean response, scaled by percent. Statements include concerns about safety, trust in vaccine information, and willingness to recommend vaccination. The chart reveals variation in sentiment and notable asymmetries across response patterns.
+</div>
+
+<div class="question-box">
+<b>Q5b ....</b><br>
+COVID survey - another view. Create two bar charts of the Likert data for the six survey questions in from the plot in Exercise 2. This should be a single plot visualizing the percentages of each possible answer, with different questions on the y-axis. Use an appropriate color scale.<br>
+<b>b. Create a 100% bar chart</b>
+<br><b>Write alt text for your visualization as well.</b>
+</div>
+
+```{r}
+#| label: label-me-5b
+#| fig.width: 10   # width in inches
+#| fig.height: 6   # height in inches
+
 # Ensure response_value is factor for 100% chart
 likert_summary <- likert_summary %>%
   mutate(response_value = factor(response_value, levels = 1:5))
@@ -1618,5 +1644,9 @@ g100 <- ggplot(likert_summary, aes(
 
 print(g100)
 
-
 ```
+<div class="note-box">
+<b>Q5b ....alt text description</b><br>
+Alt text: A 100% stacked bar chart displays Likert-scale survey responses to six statements about COVID-19 vaccines. Each bar corresponds to a different statement, such as “Concern about vaccine safety” and “Will recommend vaccine.” The bars are divided into color-coded segments representing response options: Strongly disagree (light blue), Disagree (orange), Neutral (yellow), Agree (red), Strongly agree (dark blue), and NA (gray). The x-axis shows percentage values from 0 to 100%, allowing for comparison of relative agreement across the questions. The chart highlights variation in public sentiment—some questions skew toward strong agreement, while others show more mixed or polarized responses.
+</div>
+
