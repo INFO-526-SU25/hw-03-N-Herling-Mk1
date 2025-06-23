@@ -52,3 +52,10 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* experiment to make the plot larger on the page*/
+.mywideplot {
+  width: 60vw;         /* Take up 90% of the viewport */
+  margin-left: -15vw;   /* Shift left to center it better */
+  max-width: none;     /* Allow expansion beyond container */
+  min-height: 600px;      /* force minimum height */
+}

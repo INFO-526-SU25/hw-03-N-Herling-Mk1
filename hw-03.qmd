@@ -111,8 +111,10 @@ knitr::opts_chunk$set(
   dpi = 300             # higher dpi, sharper image
 )
 ## ---- end theme set up
+
+
 ```
-## (*@*) - function block
+## (>>>>) - function block
 <div class="question-box">
 In an effort to reduce repeating code a function block was created.
 </div>
@@ -123,6 +125,7 @@ In an effort to reduce repeating code a function block was created.
 
 # - size as a variable
 set_dot_size <- 1
+
 # Function for the "All" group plot (g0)
 plot_all <- function(data) {
   ggplot(data, aes(x = explanatory_value, y = mean)) +
@@ -137,7 +140,7 @@ plot_all <- function(data) {
         explanatory = as_labeller(explanatory_labels)
       )
     ) +
-    theme_minimal(base_size = 11) +
+    theme_minimal(base_size = 14) +
     labs(
       title = "COVID-19 Vaccine Attitudes by Demographic Group",
       x = NULL,
@@ -145,17 +148,20 @@ plot_all <- function(data) {
     ) +
     theme(
       plot.title = element_text(hjust = 0.5),
+      panel.grid = element_blank(),  # Removes all grid lines
+      panel.spacing.x = unit(0.1, "lines"),  # - control width of each graph/column
+      panel.spacing.y = unit(0.25, "lines"),   # - control vertical space
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_text(
         vjust = 0.5,
         size = strip_text_size,
-        margin = margin(t = 20, b = 10, r = 5, l = 5)
+        margin = margin(t = 5, b = 5, r = 6, l = 6)   # - controls text in boxes
       ),
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 15, l = 15)
+        margin = margin(t = 15, b = 15, r = 25, l = 25)
       ),
       axis.text.y = element_blank(),
       axis.text.x = element_blank(),
@@ -182,13 +188,16 @@ plot_age <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # - control width of each graph/column
+      panel.spacing.y = unit(0.0, "lines"),   # - control vertical space
+      panel.grid = element_blank(),  # Removes all grid lines
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 13, l = 13)
+        margin = margin(t = 10, b = 10, r = 22, l = 22)
       ),
       axis.text.y = element_text(size = 10),
       panel.spacing = unit(1, "lines"),
@@ -216,13 +225,15 @@ plot_gender <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # - control width of each graph/column
+      panel.grid = element_blank(),  # Removes all grid lines
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 5, l = 6)
+        margin = margin(t = 10, b = 10, r = 14, l = 14)
       ),
       axis.text.y = element_text(size = 10),
       axis.text.x = element_blank(),
@@ -250,13 +261,15 @@ plot_race <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # - control width of each graph/column      
+      panel.grid = element_blank(),  # Removes all grid lines
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 10, l = 10)
+        margin = margin(t = 10, b = 10, r = 19, l = 19)
       ),
       axis.text.y = element_text(size = 10),
       panel.spacing = unit(1, "lines"),
@@ -281,9 +294,13 @@ plot_ethnicity <- function(data, sub_title_specific) {
     theme_minimal(base_size = 10) +
     labs(
       x = NULL,
-      y = paste0("Mean Likert score\n(Error bars: ", sub_title_specific, ")")
+      y = paste0("Mean Likert score\n(Error bars: ", sub_title_specific, ")"),
+      caption = "Citation: The data collected by Pavan Shah, Giorgio Caturegli, Galen Shi, and Joshua Materi at the Johns Hopkins School of Medicine.\n We thank Giorgio Caturegli for providing access to the dataset. This visualization is based on their survey results."
     ) +
     theme(
+      plot.caption = element_text(hjust = 0),  # 0 = left, 1 = right, 0.5 = center
+      panel.spacing.x = unit(0.1, "lines"),  # - control width of each graph/column
+      panel.grid = element_blank(),  # Removes all grid lines
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
@@ -298,7 +315,7 @@ plot_ethnicity <- function(data, sub_title_specific) {
       panel.spacing = unit(1, "lines")
     )
 }
-# ..... prepare the variables.
+# ..... prepare the variables. for graphing
 # . ethnicity.
 filter_ethnicity_data <- function(data) {
   data %>%
@@ -985,7 +1002,8 @@ The COVID vaccine survey gathered responses from medical and nursing students ac
 <br>
 <b>2. <i>Concern About Side Effects and Age:</i></b> <br>Across all age groups, responses to concerns about “safety and side effects” hovered around a neutral average (Likert score ≈ 3), with relatively wide error bars. This indicates uncertainty or ambivalence. However, younger students tended to show slightly higher trust (i.e. lower concern scores), suggesting that age may play a role in perceived vaccine risk.
 <br>
-<b>3. <i>Willingness to Recommend and Vaccination History:</i></b> <br>ARespondents with a history of receiving vaccines overwhelmingly strongly agreed with the statement “I will recommend the vaccine to family, friends, and community members.” This strong consensus highlights how personal experience with vaccines may positively reinforce trust and willingness to advocate for vaccination.
+<b>3. There is perhaps some <i>counter-intuition</i> at play here among nursing students who responded to the question: "Based on my understanding, I believe this vaccine is safe."</b><br> The 10–90th percentile bars span the entire Likert scale, suggesting considerable variability in responses. While this reflects some uncertainty, it may stem from the ambiguity of what <i>understanding</i> means in this context. Perhaps students interpret <i>understanding</i> as requiring a solid grasp of virology—something not all nursing students may have studied in depth. Alternatively, they may associate it with the rapid development timeline of the vaccine, leading to concerns about whether it was produced safely. It seems unlikely, however, that true denial of vaccine safety is the dominant interpretation among nursing students.
+<br>
 
 Overall, the data reveal meaningful variation in how medical and nursing students interpret the science and safety of COVID-19 vaccines, highlighting the complexity of attitudes even within healthcare education.
 </div>
@@ -1206,17 +1224,17 @@ print(covid_survey_longer)
 <b>Q3 code explanation:</b><br>
 <div class="code-container">
 <code>
-covid_survey_longer &lt;- covid_survey |&gt;
-  pivot_longer(
-    cols = starts_with("exp_"),
-    names_to = "explanatory",
-    values_to = "explanatory_value"
-  ) |&gt;
-  filter(!is.na(explanatory_value)) |&gt;
-  pivot_longer(
-    cols = starts_with("resp_"),
-    names_to = "response",
-    values_to = "response_value"
+covid_survey_longer &lt;- covid_survey |&gt;<br>
+  pivot_longer( <br>
+    cols = starts_with("exp_"),<br>
+    names_to = "explanatory",<br>
+    values_to = "explanatory_value"<br>
+  ) |&gt;<br>
+  filter(!is.na(explanatory_value)) |&gt;<br>
+  pivot_longer(<br>
+    cols = starts_with("resp_"),<br>
+    names_to = "response",<br>
+    values_to = "response_value"<br>
   )
 </code>
 </div><br>
@@ -1236,6 +1254,8 @@ response_value: corresponding value<br>
 <div class="question-box">
 create the df/tibble: covid_survey_summary_stats_by_group
 </div>
+
+
 ```{r}
 #| label: label-me-3b
 # - group the data - by explanatory, explanatory_value, and response calc.
@@ -1283,7 +1303,9 @@ print(covid_survey_summary_stats_all)
 
 <div class="question-box">
 Bind the two df's<br>
-create the df/tibble: covid_summary_of_stats
+create the df/tibble: covid_summary_of_stats<br>
+<b>Note:</b><br>
+The df/tibble output doesn't match the spec. sheet - but, the variables are the righ type. All other metrics (visual) match, and there's no visual differences in the graphed data.
 </div>
 ```{r}
 #| label: label-me-3d
@@ -1328,6 +1350,7 @@ print(covid_survey_summary_stats)
 Q3e - recreate plot 
 </div>
 
+::: {.mywideplot}
 ```{r}
 #| label: label-me-3-e
 #| fig.width: 10   # width in inches
@@ -1353,12 +1376,12 @@ covid_ethnicity_only <- filter_ethnicity_data(covid_survey_summary_stats_by_grou
 
 # Label mappings for response
 response_labels <- c(
-  resp_safety = "Vaccine is safe",
-  resp_feel_safe_at_work = "Feel safer\n at work",
-  resp_concern_safety = "Concern about \nvaccine safety",
-  resp_confidence_science = "Confidence in \nscientific vetting",
-  resp_trust_info = "Trust in \nvaccine info",
-  resp_will_recommend = "Will recommend\nvaccine"
+  resp_safety = "Based on my\n understanding. I\n believe the vaccine\nis safe.",
+  resp_feel_safe_at_work = "Getting the vaccine\n will make me feel\nsafer at work.",
+  resp_concern_safety = "I am concerned\nabout the safety\nand side effects of\nthe vaccine.",
+  resp_confidence_science = "I am confident in\nthe scientific\n vetting process for\nthe new COVID\nvaccines.",
+  resp_trust_info = "I trust\nthe infomation that I\n have received about\nthe vaccines.",
+  resp_will_recommend = "I will recommend\n the vaccine to\nfamily, friends,\nand community\nmemebers."
 )
 
 # Reorder response factor levels to match response_labels
@@ -1375,13 +1398,13 @@ covid_survey_summary_stats_by_group %>%
   distinct(explanatory_value) %>%
   arrange(explanatory_value)
 
-# Vector controlling heights of each row - add height for race
+# Vector controlling heights of each row -
 row_heights <- c(
-  0.5,  # - 'All' row height — adjust as needed
-  3,    # - 'exp_age_bin' row height
-  3,    # - 'exp_gender' row height - adjust as desired
-  3,    # - 'exp_race' row height - new Race row
-  3     # - ethnicity
+  1,  # - 'All' row height — adjust as needed
+  4,    # - 'exp_age_bin' row height
+  4,    # - 'exp_gender' row height - adjust as desired
+  4,    # - 'exp_race' row height - new Race row
+  2     # - ethnicity
 )
 
 # Reorder response factor levels for 'All' layer
@@ -1393,7 +1416,7 @@ covid_all_only <- covid_survey_summary_stats_all %>%
 # Define variables for strip appearance
 strip_fill_color <- "gray90"
 strip_text_color <- "black"
-strip_text_size <- 10
+strip_text_size <- 7.8
 strip_text_face <- "plain"
 strip_text_angle_x <- 0
 strip_text_angle_y <- 0
@@ -1412,19 +1435,25 @@ g3 <- plot_race(covid_race_only)
 # Fifth layer: Ethnicity (if present)
 g4 <- plot_ethnicity(covid_ethnicity_only,"Error bars in range from 10th to 90th percentile")
 
+
 # Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
-composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
+composite_plot <- (g0 / g1 / g2 / g3 / g4) +
+  plot_layout(heights = row_heights, guides = "collect") &
   theme(plot.margin = margin(0, 0, 0, 0))
+
 
 print(composite_plot)
 
 ```
+:::
+
 <div class="note-box">
 A reconstruction of the table on CoVid-19 opinions from:
 <i>The data were collected by Pavan Shah, Giorgio Caturegli, Galen Shi, and Joshua Materi at Johns Hopkins School of Medicine.</i>
 <b>Note:</b> Error bars shown range from 10th-90th percentile.<br>
-<b>Note:</b>
+<b>Note:</b><br>
 Not all data was supplied to complete a full re-construction of the table.<br>
+The data supplied and the assumptions made from it are summarized below.
 <div class="text-container">
 <pre>
 #>>>>based on info in pdf file and .csv .. encode the following
@@ -1454,7 +1483,7 @@ When the error bars represent the 25th and 75th percentiles instead of the 10th 
 ```{r,echo=FALSE}
 #| label: label-me-4
 #| fig.width: 10   # width in inches
-#| fig.height: 8   # height in inches
+#| fig.height: 10s   # height in inches
 
 # - set quartile variables
 left_quartile <- 0.25
@@ -1555,7 +1584,7 @@ COVID survey - another view. Create two bar charts of the Likert data for the si
 ```{r}
 #| label: label-me-5a
 #| fig.width: 10   # width in inches
-#| fig.height: 6   # height in inches
+#| fig.height: 10   # height in inches
 
 # Define response labels
 response_labels <- c(
@@ -1567,71 +1596,121 @@ response_labels <- c(
   resp_will_recommend = "Will recommend\nvaccine"
 )
 
-# Step 1: Compute % response per question and response_value
-likert_summary <- covid_survey_longer %>%
-  group_by(response, response_value) %>%
-  summarise(count = n(), .groups = "drop") %>%
-  group_by(response) %>%
-  mutate(percent = count / sum(count) * 100) %>%
-  ungroup() %>%
-  mutate(
-    response = factor(response, levels = unique(response)),  # preserve order
-    response_value = factor(response_value, levels = 1:5)
+# - likert scores
+likert_scores <- c(
+"1" = "Strongly Agree", 
+"2" = "Somewhat Agree" , 
+"3" = "Neither Agree Nor Disagree", 
+"4" = "Somewhat Disagree", 
+"5" = "Strongly Disagree"
+)
+
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(viridis)
+
+# Use your viridis color palette (defined earlier)
+my_turquoise_to_yellow <- viridis(
+  12,                # Generate 10 colors in total from the palette
+  begin = 0.25,      # Start slightly above the darkest purple (~turquoise range)
+  end = 0.85,         # Stop before reaching full yellow (closer to yellow-green)
+  option = "viridis" # Use the default "viridis" palette (good for colorblind users)
+)[
+  c(1, 3, 5, 7, 9, 11)   # Select specific colors to get a visually spaced gradient:
+                      # from start (turquoise) to near end (yellow-green) [not offset]
+]
+
+
+# 1. Collapse ALL explanatory categories: one mean per response variable
+covid_summary_by_response <- covid_survey_longer |>
+  group_by(response) |>
+  summarise(
+    mean = mean(response_value, na.rm = TRUE),
+    .groups = "drop"
   )
 
-# Center percentages for diverging bar chart (v1)
-likert_summary <- likert_summary %>%
+# 2. Compute grand mean across all response items
+grand_mean <- mean(covid_summary_by_response$mean, na.rm = TRUE)
+
+# 3. Add centered mean
+covid_summary_by_response <- covid_summary_by_response |>
   mutate(
-    centered_percent = case_when(
-      response_value < 3 ~ -percent,
-      response_value == 3 ~ 0,
-      response_value > 3 ~ percent
-    )
+    centered_mean = mean - grand_mean,
+    response_label = response_labels[response]
   )
 
-# Compute mean Likert per question
-mean_scores <- covid_survey_longer %>%
-  group_by(response) %>%
-  summarise(mean_value = mean(response_value, na.rm = TRUE))
-
-# Recompute likert_summary with deviation × percent
-likert_summary <- covid_survey_longer %>%
-  group_by(response, response_value) %>%
-  summarise(count = n(), .groups = "drop") %>%
-  group_by(response) %>%
-  mutate(percent = count / sum(count) * 100) %>%
-  ungroup() %>%
-  mutate(response_value = as.numeric(as.character(response_value))) %>%
-  left_join(mean_scores, by = "response") %>%
-  mutate(
-    deviation = response_value - mean_value,
-    centered_percent = deviation * percent
-  )
-
-summary(likert_summary)
-
-# Diverging bar chart (centered around mean), with descriptive y-axis labels
-g5 <- ggplot(likert_summary, aes(
-  x = centered_percent,
-  y = fct_rev(fct_relabel(factor(response), ~ response_labels[.x])),
-  fill = factor(response_value)
+# 4. Plot — grouped by response question
+g_diverge <- ggplot(covid_summary_by_response, aes(
+  x = centered_mean,
+  y = fct_reorder(response_label, centered_mean)
 )) +
-  geom_bar(stat = "identity", width = 0.7) +
-  scale_fill_manual(
-    values = c("1" = "#d73027", "2" = "#fc8d59", "3" = "#ffffbf", "4" = "#91bfdb", "5" = "#4575b4"),
-    name = "Likert response",
-    labels = c("Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree")
-  ) +
-  labs(
-    title = "Diverging Bar Chart of Likert Responses Centered Around Question Mean",
-    x = "Deviation × Percentage",
-    y = "Survey question"
-  ) +
-  theme_minimal()
+  geom_col(fill = "#21908CFF", width = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30", linewidth = 0.8) +
+  geom_vline(xintercept = 0, color = "#F72585", linewidth = 1) +
 
-print(g5)
+  # Grand Mean label (text)
+  annotate(
+    "text",
+    x = min(covid_summary_by_response$centered_mean) * -1.9,
+    y = length(response_labels) / 2 + 0.5,
+    label = paste0("Grand Mean ≈ ", round(grand_mean, 2)),
+    color = "#F72585",
+    hjust = 1,
+    size = 10,
+    fontface = "bold"
+  ) +
+
+  # Arrow pointing to grand mean line
+  annotate(
+    "segment",
+    x = min(covid_summary_by_response$centered_mean) * -1.1,
+    xend = 0,
+    y = length(response_labels) / 2 + 0.3,
+    yend = length(response_labels) / 2,
+    color = "#F72585",
+    arrow = arrow(length = unit(0.2, "cm")),
+    size = 1
+  ) +
+
+  # Add top axis with actual Likert scale labels
+  scale_x_continuous(
+    name = "Centered Mean Likert Score",
+    sec.axis = sec_axis(
+      trans = ~ . + grand_mean,
+      name = "Likert Scale",
+      breaks = 1:5 - grand_mean,
+      labels = paste0(
+        names(likert_scores), "\n", likert_scores
+      )
+    )
+  ) +
+
+  labs(
+    title = "Centered Likert Score by Survey Question",
+    subtitle = "Bars show deviation from grand mean Likert score across all questions",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.y = element_text(size = 16),
+    axis.text.x = element_text(size = 17),
+    axis.text.x.top = element_text(size = 14, color = "gray20"),
+    axis.title.x.top = element_text(size = 14, face = "italic"),
+    axis.title.x = element_text(size = 16)
+  )
+
+# Print the plot
+print(g_diverge)
+
 
 ```
+<div class="note-box">
+<b>Note:</b><br>
+Data for this graph was taken from the 25th-75th percentile wrangled data.
+</div>
+
 <div class="note-box">
 <b>Q5a ....alt text description</b><br>
 Alt text: A diverging bar chart visualizes Likert-scale responses to six COVID-19 vaccine-related statements. Each statement is represented by a horizontal bar segmented by response categories: strongly disagree, disagree, neutral, agree, strongly agree, and NA, each in a distinct color. The x-axis shows a centered scale ranging from -60 to 60, indicating deviation from the mean response, scaled by percent. Statements include concerns about safety, trust in vaccine information, and willingness to recommend vaccination. The chart reveals variation in sentiment and notable asymmetries across response patterns.
@@ -1646,33 +1725,76 @@ COVID survey - another view. Create two bar charts of the Likert data for the si
 
 ```{r}
 #| label: label-me-5b
-#| fig.width: 10   # width in inches
-#| fig.height: 6   # height in inches
+#| fig.width: 8   # width in inches
+#| fig.height: 10   # height in inches
+# We start from covid_survey_longer and get proportions by explanatory & response
 
-# Ensure response_value is factor for 100% chart
-likert_summary <- likert_summary %>%
-  mutate(response_value = factor(response_value, levels = 1:5))
+library(dplyr)
+library(ggplot2)
 
-# 100% stacked bar chart, with descriptive y-axis labels
-g100 <- ggplot(likert_summary, aes(
-  x = percent,
-  y = fct_rev(fct_relabel(factor(response), ~ response_labels[.x])),
-  fill = response_value
-)) +
-  geom_bar(stat = "identity", width = 0.7) +
+# Step 1: Summarize all response distributions
+all_response_dists <- covid_survey_longer |>
+  filter(response %in% names(response_labels)) |>
+  group_by(response, response_value) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(response) |>
+  mutate(percent = n / sum(n)) |>
+  ungroup()
+
+# Step 2: Plot with one bar per response question (faceted or stacked)
+g5 <- # Response labels (readable, with line breaks)
+response_labels <- c(
+  resp_safety = "Vaccine is safe",
+  resp_feel_safe_at_work = "Feel safer\nat work",
+  resp_concern_safety = "Concern about\nvaccine safety",
+  resp_confidence_science = "Confidence in\nscientific vetting",
+  resp_trust_info = "Trust in\nvaccine info",
+  resp_will_recommend = "Will recommend\nvaccine"
+)
+
+# Likert response labels
+likert_scores <- c(
+  "1" = "Strongly Agree", 
+  "2" = "Somewhat Agree", 
+  "3" = "Neither Agree Nor Disagree", 
+  "4" = "Somewhat Disagree", 
+  "5" = "Strongly Disagree"
+)
+
+# Summarize overall response distribution
+all_response_dists <- covid_survey_longer |>
+  filter(response %in% names(response_labels)) |>
+  group_by(response, response_value) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(response) |>
+  mutate(percent = n / sum(n)) |>
+  ungroup() |>
+  mutate(response = factor(response, levels = names(response_labels), labels = response_labels[ names(response_labels) ]))
+
+# Plot: horizontal stacked bars
+g5 <- ggplot(all_response_dists, aes(y = response, x = percent, fill = factor(response_value))) +
+  geom_col(width = 0.6) +
+  scale_x_continuous(labels = scales::percent_format()) +
   scale_fill_manual(
-    values = c("1" = "#d73027", "2" = "#fc8d59", "3" = "#ffffbf", "4" = "#91bfdb", "5" = "#4575b4"),
-    name = "Response",
-    labels = c("Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree")
+    values = my_turquoise_to_yellow,
+    labels = likert_scores,
+    name = "Likert Response"
   ) +
   labs(
-    title = "100% Stacked Bar Chart of Likert Responses",
-    x = "Percentage of responses",
-    y = "Survey question"
+    x = "Percentage",
+    y = NULL,
+    title = "Overall Survey Response Distribution",
+    subtitle = "Horizontal 100% Stacked Bar Chart for All Questions"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    plot.title = element_text(size = 16, face = "bold")
+  )
 
-print(g100)
+plot(g5)
 
 ```
 <div class="note-box">
