@@ -53,9 +53,11 @@
 }
 
 /* experiment to make the plot larger on the page*/
-.mywideplot {
-  width: 60vw;         /* Take up 90% of the viewport */
-  margin-left: -15vw;   /* Shift left to center it better */
-  max-width: none;     /* Allow expansion beyond container */
-  min-height: 600px;      /* force minimum height */
+.mywideplot img {
+  width: 70vw !important;     /* Force width to 70% of viewport */
+  max-width: none !important; /* Remove max-width restrictions */
+  height: auto !important;    /* Maintain aspect ratio */
+  display: block;
+  margin-left: -300px;     /* No left margin */
+  margin-right: auto; /* Push image to the left */
 }
