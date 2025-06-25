@@ -1,5 +1,8 @@
 # ... hard code the encodings...
 
+
+exp_All <-c("")
+
 # n = 1/7
 # =========================
 # explanatory: exp_age_bin
@@ -20,21 +23,21 @@
 # exp_age_labels[[1]]  # returns just value: "<20"
 # names(exp_age_labels)[1]  # returns the name/key: "0"
 # ....................
-exp_age_labels <- c(
-  `0` = "<20",
+exp_age_bin <- c(
+  `30` = ">30",
+  `25` = "26-30",
   `20` = "21-25",
-  `25` = "25-29",
-  `30` = ">30"
+    `0` = "<20"
 )
 
 
-explanatory_value = 0
+#explanatory_value = 0
 # - desired label (for graphing): "Female"
-explanatory_value = 1
+#explanatory_value = 1
 # - desired label (for graphing): "Male"
-explanatory_value = 3
+#explanatory_value = 3
 # - desired label (for graphing): "Non-binary third gender"
-explanatory_value = 4
+#explanatory_value = 4
 # - desired label (for graphing): "Prefer not to say"
 # n = 2/7
 # ============================
@@ -43,6 +46,12 @@ explanatory_value = 4
 # ============================
 
 # Example access:
+exp_gender <- c(
+  `0` = "Female",
+  `1` = "Male",
+  `3` = "Non-binary third gender",
+  `4` = "Prefer not to say"
+)
 
 
 
@@ -51,7 +60,13 @@ explanatory_value = 4
 # exp_race
 # .. Race ....................
 # ============================
-
+exp_race <- c(
+  '5' = "White",
+  '4' = "Native Hawaiian/Other\nPacific Islander",
+  '3' = "Black/African American",
+  '2' = "Asian",
+  '1' = "American Indian/\nNative Alaskan"
+  )
 
 
 # n = 4/7
@@ -59,6 +74,10 @@ explanatory_value = 4
 # explanatory: exp_ethnicity
 # .. Ethnicity ...............
 # ============================
+exp_ethnicity <- c(
+  '1' = "Non-Hispanic/Non-Latino",
+  '2' = "Hispanic/Latino"
+)
 
 
 
@@ -67,7 +86,10 @@ explanatory_value = 4
 # exp_profession
 # .. Profession ..............
 # ============================
-
+exp_profession <- c(
+  '1'="Nursing",
+  '0'="Medical"
+)
 
 
 
@@ -76,8 +98,10 @@ explanatory_value = 4
 # explanatory: exp_already_vax
 # .. Had COVID vaccine .......
 # ============================
-
-
+exp_already_vax <- c(
+  '1'="Yes",
+  '0'="No"
+)
 
 
 
@@ -86,18 +110,21 @@ explanatory_value = 4
 # explanatory: exp_flu_vax
 # .. Had flu vaccine this year
 # ============================
-
+exp_flu_vax <- c(
+    '1'="Yes",
+  '0'="No"
+)
 
 
 # - ENCODING KEYS: COLS:
 # Label mappings for response
 response_labels_COLS <- c(
-  resp_safety = "Based on my\n understanding. I\n believe the vaccine\nis safe.",
-  resp_feel_safe_at_work = "Getting the vaccine\n will make me feel\nsafer at work.",
-  resp_concern_safety = "I am concerned\nabout the safety\nand side effects of\nthe vaccine.",
-  resp_confidence_science = "I am confident in\nthe scientific\n vetting process for\nthe new COVID\nvaccines.",
+  resp_will_recommend = "I will recommend\n the vaccine to\nfamily, friends,\nand community\nmemebers.",
   resp_trust_info = "I trust\nthe infomation that I\n have received about\nthe vaccines.",
-  resp_will_recommend = "I will recommend\n the vaccine to\nfamily, friends,\nand community\nmemebers."
+  resp_confidence_science = "I am confident in\nthe scientific\n vetting process for\nthe new COVID\nvaccines.",
+  resp_concern_safety = "I am concerned\nabout the safety\nand side effects of\nthe vaccine.",
+  resp_feel_safe_at_work = "Getting the vaccine\n will make me feel\nsafer at work.",
+  resp_safety = "Based on my\n understanding. I\n believe the vaccine\nis safe."
 )
 
 
@@ -119,7 +146,7 @@ explanatory_labels_by_total_group_ROWS <- c(
   All = "All",
   exp_age_bin = "Age",
   exp_gender = "Gender",
-  exp_race = "Race"    ,# Added Race label
+  exp_race = "Race",               # Added Race label
   exp_ethnicity = "Ethnicity",
   exp_profession = "Profession",
   exp_already_vax = "Had COVID\n vaccine",
