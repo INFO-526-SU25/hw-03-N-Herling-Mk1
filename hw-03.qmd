@@ -156,7 +156,7 @@ plot_all <- function(data) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 15, l = 15)
+        margin = margin(t = 10, b = 10, r = 28, l = 28)
       ),
       axis.text.y = element_blank(),
       axis.text.x = element_blank(),
@@ -190,7 +190,7 @@ plot_age <- function(data) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 13, l = 13)
+        margin = margin(t = 10, b = 10, r = 25, l = 25)
       ),
       axis.text.y = element_text(size = 10),
       panel.spacing = unit(1, "lines"),
@@ -225,7 +225,7 @@ plot_gender <- function(data) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 5, l = 6)
+        margin = margin(t = 10, b = 10, r = 17, l = 17)
       ),
       axis.text.y = element_text(size = 10),
       axis.text.x = element_blank(),
@@ -260,7 +260,7 @@ plot_race <- function(data) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 10, l = 10)
+        margin = margin(t = 10, b = 10, r = 22, l = 22)
       ),
       axis.text.y = element_text(size = 10),
       panel.spacing = unit(1, "lines"),
@@ -295,7 +295,7 @@ plot_ethnicity <- function(data, sub_title_specific) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 4, l = 7)
+        margin = margin(t = 10, b = 10, r = 18, l = 18)
       ),
       axis.text.y = element_text(size = 10),
       axis.text.x = element_blank(),
@@ -329,7 +329,7 @@ plot_profession <- function(data, sub_title_specific) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 4, l = 7)
+        margin = margin(t = 10, b = 10, r = 14, l = 14)
       ),
       axis.text.y = element_text(size = 10),
       axis.text.x = element_blank(),
@@ -364,7 +364,7 @@ plot_vax_status <- function(data, sub_title_specific) {
       strip.text.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        margin = margin(t = 10, b = 10, r = 4, l = 7)
+        margin = margin(t = 10, b = 10, r = 12, l = 12)
       ),
       axis.text.y = element_text(size = 10),
       axis.text.x = element_blank(),
@@ -1565,6 +1565,7 @@ strip_text_vjust_y <- 0.5
 strip_placement <- "outside"  # already used in your code
 
 
+
 # Call some functions
 g0 <- plot_all(covid_all_only)
 # - second layer - Age
@@ -1577,9 +1578,9 @@ g3 <- plot_race(covid_race_only)
 g4 <- plot_ethnicity(covid_ethnicity_only,"")
 #
 g5 <- plot_profession(covid_profession_only,"")
-
+#
 g6 <- plot_vax_status(covid_covid_vax_only,"")
-
+#
 g7 <- plot_flu_vax_status(covid_flu_vax_only,"Error bars in range from 10th to 90th percentile")
 # Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
 composite_plot <- (g0 / g1 / g2 / g3 / g4 / g5 /g6 /g7 + plot_layout(heights = row_heights)) &
@@ -1658,6 +1659,10 @@ covid_age_only <- filter_age_data(covid_survey_summary_stats_by_group)
 covid_gender_only <- filter_gender_data(covid_survey_summary_stats_by_group)
 covid_race_only <- filter_race_data(covid_survey_summary_stats_by_group)
 covid_ethnicity_only <- filter_ethnicity_data(covid_survey_summary_stats_by_group)
+covid_profession_only <- filter_profession_data(covid_survey_summary_stats_by_group)
+covid_covid_vax_only <-filter_vax_status_data(covid_survey_summary_stats_by_group)
+covid_flu_vax_only <- filter_flu_vax_data(covid_survey_summary_stats_by_group)
+
 # - call graph maker..
 # Call some functions
 g0 <- plot_all(covid_all_only)
@@ -1668,13 +1673,21 @@ g2 <- plot_gender(covid_gender_only)
 # Fourth layer - Race
 g3 <- plot_race(covid_race_only)
 # Fifth layer: Ethnicity (if present)
-g4 <- plot_ethnicity(covid_ethnicity_only,"Error bars in range from 25th to 75th percentile")
+g4 <- plot_ethnicity(covid_ethnicity_only,"")
+#
+g5 <- plot_profession(covid_profession_only,"")
+#
+g6 <- plot_vax_status(covid_covid_vax_only,"")
+#
+g7 <- plot_flu_vax_status(covid_flu_vax_only,"Error bars in range from 10th to 90th")
 
+
+# Composite plot with 7 layers stacked (All / Age / Gender / Race / Ethnicity)
 # Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
-composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
+composite_plot_2 <- (g0 / g1 / g2 / g3 / g4 / g5 /g6 /g7 + plot_layout(heights = row_heights)) &
   theme(plot.margin = margin(0, 0, 0, 0))
 
-print(composite_plot)
+print(composite_plot_2)
 ```
 
 ## 5 - COVID survey - another view
