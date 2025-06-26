@@ -1701,6 +1701,12 @@ composite_plot_2 <- (g0 / g1 / g2 / g3 / g4 / g5 /g6 /g7 + plot_layout(heights =
 
 print(composite_plot_2)
 ```
+<div class="note-box "> 
+<b>Q4 - conclusions</b><br>
+When the percentiles are shrunk to 25-75%, the shape of the statistics change significantly.
+The visual effect is far more agreement amongst those surveyed,i.e., the data looks much more closely grouped to the mean.
+</div>
+
 
 ## 5 - COVID survey - another view
 <div class="question-box">
@@ -1947,4 +1953,11 @@ plot(g5b)
 <div class="note-box "> 
 <b>Q5b - Alt text</b><br>
 A horizontal stacked bar chart displays the distribution of Likert-scale responses to six survey questions on COVID vaccine attitudes, including: “Vaccine is safe,” “Feel safer at work,” “Concern re: vaccine side effects,” “Confidence in scientific vetting,” “Trust in vaccine info,” and “Will recommend vaccine.” <br>Each bar represents a question, divided into colored segments for each response level from “1 - Strongly Agree” to “5 - Strongly Disagree,” using a perceptually uniform Viridis palette. Most responses cluster on the agreement end of the scale, especially for trust and confidence statements, while the item “Concern about vaccine safety” shows a more neutral distribution centered around “Somewhat Agree” and “Neither Agree Nor Disagree.” <br>The visual design emphasizes sentiment distribution and is optimized for accessibility, including colorblind-friendly contrast and consistent labeling.
+</div>
+
+c. Comment on how the two charts from parts (a) and (b) compare with regards to comparability.
+
+<div class="note-box "> 
+<b>Q5c - c. Comment on how the two charts from parts (a) and (b) compare with regards to comparability.</b><br>
+The two bar charts are excellent aids in concert with the larger grid. The overwhelming '1' likert score can be seen better with these visualizations, and the sense that the only 'negative' responses were really 'ambivalence or uncertainty' rather than concern.
 </div>
