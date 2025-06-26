@@ -1103,184 +1103,245 @@ Q3e - recreate plot
 #| fig.width: 10   # width in inches
 #| fig.height: 6   # height in inches
 
-
-
-
-#...........................................................>>>>>>>>>>>>>>
-#....................................
-#-------- here's your huckleberry
-#write.csv(covid_survey_summary_stats_by_group, "1_covid_stats_by_goup.csv", row.names = FALSE)
-
 # Vector controlling heights of each row -
-
-
-
-
-age_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_age_bin") %>%
-  mutate(age_group = exp_age_bin[as.character(explanatory_value)])
-
-age_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_age_bin") %>%
-  mutate(age_group = exp_age_bin[as.character(explanatory_value)])
-
-write.csv(age_data_10_90, "age_data_10_90.csv", row.names = FALSE)
-write.csv(age_data_25_75, "age_data_25_75.csv", row.names = FALSE)
-
-
-# -  gender
-gender_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_gender") %>%
-  mutate(gen_type = exp_gender[as.character(explanatory_value)])
-
-gender_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_gender") %>%
-  mutate(gen_type = exp_gender[as.character(explanatory_value)])
-
-write.csv(gender_data_10_90, "0_gender_data_10_90.csv", row.names = FALSE)
-write.csv(gender_data_25_75, "0_gender_data_25_75.csv", row.names = FALSE)
+# 
+# age_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_age_bin") %>%
+#   mutate(age_group = exp_age_bin[as.character(explanatory_value)])
+# 
+# age_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_age_bin") %>%
+#   mutate(age_group = exp_age_bin[as.character(explanatory_value)])
+# 
+# write.csv(age_data_10_90, "age_data_10_90.csv", row.names = FALSE)
+# write.csv(age_data_25_75, "age_data_25_75.csv", row.names = FALSE)
+# 
+# 
+# # -  gender
+# gender_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_gender") %>%
+#   mutate(gen_type = exp_gender[as.character(explanatory_value)])
+# 
+# gender_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_gender") %>%
+#   mutate(gen_type = exp_gender[as.character(explanatory_value)])
+# 
+# write.csv(gender_data_10_90, "0_gender_data_10_90.csv", row.names = FALSE)
+# write.csv(gender_data_25_75, "0_gender_data_25_75.csv", row.names = FALSE)
 
 
 
 # - Race
-race_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_race") %>%
-  mutate(race_type = exp_race[as.character(explanatory_value)])
-
-race_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_race") %>%
-  mutate(race_type = exp_race[as.character(explanatory_value)])
-
-write.csv(race_data_10_90, "0_race_data_10_90.csv", row.names = FALSE)
-write.csv(race_data_25_75, "0_race_data_25_75.csv", row.names = FALSE)
-
+# race_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_race") %>%
+#   mutate(race_type = exp_race[as.character(explanatory_value)])
+# 
+# race_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_race") %>%
+#   mutate(race_type = exp_race[as.character(explanatory_value)])
+# 
+# write.csv(race_data_10_90, "0_race_data_10_90.csv", row.names = FALSE)
+# write.csv(race_data_25_75, "0_race_data_25_75.csv", row.names = FALSE)
+# 
 
 # -ethnicity
-ethnicity_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_ethnicity") %>%
-  mutate(ethnicity_type = exp_ethnicity[as.character(explanatory_value)])
-
-ethnicity_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_ethnicity") %>%
-  mutate(ethnicity_type = exp_ethnicity[as.character(explanatory_value)])
-
-write.csv(ethnicity_data_10_90, "0_ethnicity_data_10_90.csv", row.names = FALSE)
-write.csv(ethnicity_data_25_75, "0_ethnicity_data_25_75.csv", row.names = FALSE)
+# ethnicity_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_ethnicity") %>%
+#   mutate(ethnicity_type = exp_ethnicity[as.character(explanatory_value)])
+# 
+# ethnicity_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_ethnicity") %>%
+#   mutate(ethnicity_type = exp_ethnicity[as.character(explanatory_value)])
+# 
+# write.csv(ethnicity_data_10_90, "0_ethnicity_data_10_90.csv", row.names = FALSE)
+# write.csv(ethnicity_data_25_75, "0_ethnicity_data_25_75.csv", row.names = FALSE)
 
 
 # - profession
-profession_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_profession") %>%
-  mutate(profession_type = exp_profession[as.character(explanatory_value)])
-
-profession_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_profession") %>%
-  mutate(profession_type = exp_profession[as.character(explanatory_value)])
-
-write.csv(profession_data_10_90, "0_profession_data_10_90.csv", row.names = FALSE)
-write.csv(profession_data_25_75, "0_profession_data_25_75.csv", row.names = FALSE)
+# profession_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_profession") %>%
+#   mutate(profession_type = exp_profession[as.character(explanatory_value)])
+# 
+# profession_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_profession") %>%
+#   mutate(profession_type = exp_profession[as.character(explanatory_value)])
+# 
+# write.csv(profession_data_10_90, "0_profession_data_10_90.csv", row.names = FALSE)
+# write.csv(profession_data_25_75, "0_profession_data_25_75.csv", row.names = FALSE)
 
 
 # - had COVID_VAX
-already_vax_COVID_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_already_vax") %>%
-  mutate(COVID_VAX_status = exp_already_vax[as.character(explanatory_value)])
-
-already_vax_COVID_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_already_vax") %>%
-  mutate(COVID_VAX_status = exp_already_vax[as.character(explanatory_value)])
-
-write.csv(already_vax_COVID_data_10_90, "0_already_vax_COVID_data_10_90.csv", row.names = FALSE)
-write.csv(already_vax_COVID_data_25_75, "0_already_vax_COVID_data_25_75.csv", row.names = FALSE)
-
+# already_vax_COVID_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_already_vax") %>%
+#   mutate(COVID_VAX_status = exp_already_vax[as.character(explanatory_value)])
+# 
+# already_vax_COVID_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_already_vax") %>%
+#   mutate(COVID_VAX_status = exp_already_vax[as.character(explanatory_value)])
+# 
+# write.csv(already_vax_COVID_data_10_90, "0_already_vax_COVID_data_10_90.csv", row.names = FALSE)
+# write.csv(already_vax_COVID_data_25_75, "0_already_vax_COVID_data_25_75.csv", row.names = FALSE)
+# 
 
 # - Had FLU_VAX
-exp_flu_vax
-already_vax_FLU_data_10_90 <- covid_survey_summary_stats_10_90 %>%
-  filter(explanatory == "exp_flu_vax") %>%
-  mutate(FLU_VAX_status = exp_flu_vax[as.character(explanatory_value)])
-
-already_vax_FLU_data_25_75 <- covid_survey_summary_stats_25_75 %>%
-  filter(explanatory == "exp_flu_vax") %>%
-  mutate(FLU_VAX_status = exp_flu_vax[as.character(explanatory_value)])
-
-write.csv(already_vax_FLU_data_10_90, "0_already_vax_FLU_data_10_90.csv", row.names = FALSE)
-write.csv(already_vax_FLU_data_25_75, "0_already_vax_FLU_data_25_75.csv", row.names = FALSE)
+# exp_flu_vax
+# already_vax_FLU_data_10_90 <- covid_survey_summary_stats_10_90 %>%
+#   filter(explanatory == "exp_flu_vax") %>%
+#   mutate(FLU_VAX_status = exp_flu_vax[as.character(explanatory_value)])
+# 
+# already_vax_FLU_data_25_75 <- covid_survey_summary_stats_25_75 %>%
+#   filter(explanatory == "exp_flu_vax") %>%
+#   mutate(FLU_VAX_status = exp_flu_vax[as.character(explanatory_value)])
+# 
+# write.csv(already_vax_FLU_data_10_90, "0_already_vax_FLU_data_10_90.csv", row.names = FALSE)
+# write.csv(already_vax_FLU_data_25_75, "0_already_vax_FLU_data_25_75.csv", row.names = FALSE)
 
 
 #------------
 # --- All
-all_formatted_10_90 <- All_10_90_all %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  select(response_label, mean) %>%
-  pivot_wider(names_from = explanatory_value, values_from = mean) %>%
-  rename_with(~ "All", .cols = -response_label)
-
-# --- Age
-age_block_10_90 <- age_data_10_90 %>%
-  select(response, age_group, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = age_group, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Gender
-gender_block_10_90 <- gender_data_10_90 %>%
-  select(response, gen_type, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = gen_type, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Race
-race_block_10_90 <- race_data_10_90 %>%
-  select(response, race_type, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = race_type, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Ethnicity
-ethnicity_block_10_90 <- ethnicity_data_10_90 %>%
-  select(response, ethnicity_type, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = ethnicity_type, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Profession
-profession_block_10_90 <- profession_data_10_90 %>%
-  select(response, profession_type, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = profession_type, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Had COVID vaccine
-covid_vax_block_10_90 <- already_vax_COVID_data_10_90 %>%
-  select(response, COVID_VAX_status, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = COVID_VAX_status, values_from = mean) %>%
-  select(response_label, everything(), -response)
-
-# --- Had flu vaccine
-flu_vax_block_10_90 <- already_vax_FLU_data_10_90 %>%
-  select(response, FLU_VAX_status, mean) %>%
-  mutate(response_label = response_labels_COLS[response]) %>%
-  pivot_wider(names_from = FLU_VAX_status, values_from = mean) %>%
-  select(response_label, everything(), -response)
+# all_formatted_10_90 <- All_10_90_all %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   select(response_label, mean) %>%
+#   pivot_wider(names_from = explanatory_value, values_from = mean) %>%
+#   rename_with(~ "All", .cols = -response_label)
+# 
+# # --- Age
+# age_block_10_90 <- age_data_10_90 %>%
+#   select(response, age_group, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = age_group, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Gender
+# gender_block_10_90 <- gender_data_10_90 %>%
+#   select(response, gen_type, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = gen_type, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Race
+# race_block_10_90 <- race_data_10_90 %>%
+#   select(response, race_type, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = race_type, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Ethnicity
+# ethnicity_block_10_90 <- ethnicity_data_10_90 %>%
+#   select(response, ethnicity_type, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = ethnicity_type, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Profession
+# profession_block_10_90 <- profession_data_10_90 %>%
+#   select(response, profession_type, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = profession_type, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Had COVID vaccine
+# covid_vax_block_10_90 <- already_vax_COVID_data_10_90 %>%
+#   select(response, COVID_VAX_status, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = COVID_VAX_status, values_from = mean) %>%
+#   select(response_label, everything(), -response)
+# 
+# # --- Had flu vaccine
+# flu_vax_block_10_90 <- already_vax_FLU_data_10_90 %>%
+#   select(response, FLU_VAX_status, mean) %>%
+#   mutate(response_label = response_labels_COLS[response]) %>%
+#   pivot_wider(names_from = FLU_VAX_status, values_from = mean) %>%
+#   select(response_label, everything(), -response)
 
 # --- Bind them all together
-master_10_90 <- bind_cols(
-  all_formatted_10_90,
-  age_block_10_90 %>% select(-response_label),
-  gender_block_10_90 %>% select(-response_label),
-  race_block_10_90 %>% select(-response_label),
-  ethnicity_block_10_90 %>% select(-response_label),
-  profession_block_10_90 %>% select(-response_label),
-  covid_vax_block_10_90 %>% select(-response_label),
-  flu_vax_block_10_90 %>% select(-response_label)
-)
+# master_10_90 <- bind_cols(
+#   all_formatted_10_90,
+#   age_block_10_90 %>% select(-response_label),
+#   gender_block_10_90 %>% select(-response_label),
+#   race_block_10_90 %>% select(-response_label),
+#   ethnicity_block_10_90 %>% select(-response_label),
+#   profession_block_10_90 %>% select(-response_label),
+#   covid_vax_block_10_90 %>% select(-response_label),
+#   flu_vax_block_10_90 %>% select(-response_label)
+# )
 
-master_10_90 <- bind_cols(all_formatted_10_90, bind_cols(category_blocks_10_90))
-# === WRITE TO CSV ===
-write.csv(master_10_90, "master_data_10_90.csv", row.names = FALSE)
-#write.csv(master_25_75, "master_data_25_75.csv", row.names = FALSE)
+# master_10_90 <- bind_cols(all_formatted_10_90, bind_cols(category_blocks_10_90))
+# # === WRITE TO CSV ===
+# write.csv(master_10_90, "master_data_10_90.csv", row.names = FALSE)
+# #write.csv(master_25_75, "master_data_25_75.csv", row.names = FALSE)
+
+# --- let's get to it....
+library(tidyverse)
+library(stringr)
+library(patchwork)
+
+# --- Step 1: Load and clean data ---
+df_raw <- read_csv("master_90_10.csv", skip = 1, col_names = TRUE)
+colnames(df_raw)[ncol(df_raw)] <- "group_type"
+df_raw <- df_raw %>% filter(!if_all(everything(), is.na))
+
+# --- Step 2: Pivot longer ---
+df_long <- df_raw %>%
+  pivot_longer(cols = -c(1, group_type), names_to = "statement", values_to = "metrics")
+
+# --- Step 3: Extract low, high, mean ---
+df_clean <- df_long %>%
+  extract(metrics, into = c("low", "high", "mean"),
+          regex = "low=(.*?), high=(.*?), mean=(.*)") %>%
+  mutate(across(c(low, high, mean), as.numeric))
+
+colnames(df_clean)[1] <- "group"
+
+# --- Step 4: Filter for just (ALL) and >30 under Age ---
+df_subset <- df_clean %>%
+  filter(group %in% c("(ALL)", ">30")) %>%
+  filter(group_type == "Age") %>%
+  mutate(
+    statement = str_wrap(statement, width = 35),
+    group = factor(group, levels = c("(ALL)", ">30"))
+  )
+
+# --- Step 5: Dumbbell plot function ---
+make_dumbbell_plot <- function(statement_text, show_y_labels = FALSE) {
+  df_plot <- df_subset %>% filter(statement == statement_text)
+  
+  ggplot(df_plot, aes(y = group)) +
+    # Dumbbell line from low to high
+    geom_segment(aes(x = low, xend = high, yend = group), color = "black", linewidth = 0.7) +
+    # Mean point
+    geom_point(aes(x = mean), shape = 21, fill = "black", color = "black", size = 3) +
+    scale_x_continuous(limits = c(1, 5), breaks = 1:5) +
+    labs(title = statement_text, x = "Response (1–5)", y = NULL) +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+      axis.text.x = element_text(size = 7),
+      axis.text.y = if (show_y_labels) element_text(size = 8) else element_blank(),
+      panel.grid.major.y = element_line(color = "gray80", linetype = "dotted"),
+      plot.margin = margin(5, 5, 5, 5)
+    )
+}
+
+# --- Step 6: Build the 6 dumbbell plots ---
+statements_age <- df_subset %>% pull(statement) %>% unique()
+
+plots <- map2(statements_age, seq_along(statements_age), ~ make_dumbbell_plot(.x, show_y_labels = (.y == 1)))
+
+# --- Step 7: Add right-side label "Age"
+label_panel <- ggplot() +
+  theme_void() +
+  # Top bar
+  geom_segment(aes(x = 0.5, xend = 0.5, y = 0.95, yend = 1), linewidth = 1, color = "black") +
+  # Bottom bar
+  geom_segment(aes(x = 0.5, xend = 0.5, y = 0, yend = 0.05), linewidth = 1, color = "black") +
+  # Label
+  # annotate("text", x = 0.5, y = 0.5, label = "Age", angle = 90, size = 4, fontface = "bold")
+# --- Step 8: Combine 6 plots + 1 label into a row
+final_row <- wrap_plots(c(plots, list(label_panel)), ncol = 7, widths = c(rep(1, 6), 0.2))
+
+# --- Show the final dumbbell row ---
+print(final_row)
 
 ```
 
@@ -1371,7 +1432,7 @@ COVID survey - another view. Create two bar charts of the Likert data for the si
 response_labels <- c(
   resp_safety = "Vaccine is safe",
   resp_feel_safe_at_work = "Feel safer at work",
-  resp_concern_safety = "Concern about vaccine safety",
+  resp_concern_safety = "Concern re : vaccine side effects",
   resp_confidence_science = "Confidence in scientific vetting",
   resp_trust_info = "Trust in vaccine info",
   resp_will_recommend = "Will recommend vaccine"
@@ -1440,8 +1501,10 @@ magma_color <- viridis::viridis(1, option = "magma")
 
 g_centered <- ggplot(likert_means, aes(x = centered_score, y = fct_rev(response_label), fill = direction)) +
   geom_col(width = 0.6) +
-  geom_vline(
-    xintercept = 0,
+  annotate(
+    "segment",
+    x = 0, xend = 0,
+    y = 0.5, yend = 6.5,  # Adjust y range to control vertical span
     linetype = "dashed",
     color = "black",
     linewidth = 0.8
@@ -1453,12 +1516,12 @@ g_centered <- ggplot(likert_means, aes(x = centered_score, y = fct_rev(response_
     sec.axis = dup_axis(name = NULL, labels = NULL)
   ) +
   scale_y_discrete(
-    expand = expansion(mult = c(0.05, 0.3))
+    expand = expansion(mult = c(0.05, 0.32))
   ) +
   scale_fill_manual(
     values = c(positive = my_turquoise_to_yellow[2], negative = my_turquoise_to_yellow[5]),
     name = "Likert Score Relation",
-    labels = c(positive = "Above Mean", negative = "Below Mean")
+    labels = c(positive =  "Below Mean", negative = "Above Mean")
   ) +
   labs(
     title = "Mean-Centered Likert Scores by Question\n",
@@ -1488,7 +1551,7 @@ g_centered <- ggplot(likert_means, aes(x = centered_score, y = fct_rev(response_
   # Likert numbers colored with magma palette
   geom_text(
     data = likert_xlabels,
-    aes(x = centered_score, y = 6.5, label = likert_score),
+    aes(x = centered_score, y = 6.8, label = likert_score),
     inherit.aes = FALSE,
     size = 7,
     color = likert_colors
@@ -1496,7 +1559,7 @@ g_centered <- ggplot(likert_means, aes(x = centered_score, y = fct_rev(response_
   # Likert Scores label colored in magma (middle color)
   annotate(
     "text",
-    x = 0, y = 7.1,
+    x = 0, y = 7.4,
     label = "Likert Scores",
     size = 7,
     fontface = "italic",
@@ -1518,15 +1581,19 @@ plot(g_centered)
 
 
 ```
+<div class="note-box "> 
+<b>Q5a - Alt text</b><br>
+A horizontal diverging bar chart presents mean-centered Likert scores for six COVID vaccine survey questions: “Vaccine is safe,” “Feel safer at work,” “Concern re : vaccine side effects,” “Confidence in scientific vetting,” “Trust in vaccine info,” and “Will recommend vaccine.” Each bar extends from a vertical midpoint at the mean response (1.79) to show how average responses deviate above or below the overall mean, with greater lengths indicating stronger deviation. <br>Turquoise segments indicate questions with more agreement (e.g., stronger confidence or willingness to recommend), while yellow-green segments reflect comparatively more skepticism. The chart includes an annotated mean marker, and Likert scale values from “1 - Strongly Agree” to “5 - Strongly Disagree” appear along the top axis in magma tones to reinforce the interpretive range. <br>All questions except those concerning vaccine safety and side effects tend towards '1 - Strongly Agree.' The scores for 'Vaccine is safe' and 'concerns about vaccine side effects', while above the mean, did not score into Likert-4 or Likert-5, indicating uncertainty or abmivalence but not concern.
+</div>
 
 
 ```{r}
 #| label: label-me-5b
 #| fig.width: 10   # width in inches
-#| fig.height: 10   # height in inches
+#| fig.height: 8   # height in inches
 #| warning: false
 
-# Full Likert labels
+# Full Likert labels - for the legend
 likert_labels_full <- c(
   "1" = "1 - Strongly Agree",
   "2" = "2 - Somewhat Agree",
@@ -1564,14 +1631,22 @@ g5b <- ggplot(likert_props, aes(x = percentage, y = fct_rev(response_label), fil
   ) +
   theme_minimal() +
   theme(
-    legend.position = "bottom",
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    legend.position = "right",
     legend.title = element_text(size = 12, face = "bold"),
     legend.text = element_text(size = 11),
-    axis.text.y = element_text(size = 12),
-    axis.text.x = element_text(size = 11)
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14)
   )
 
 plot(g5b)
 
 ```
+<div class="note-box "> 
+<b>Q5b - Alt text</b><br>
+A horizontal stacked bar chart displays the distribution of Likert-scale responses to six survey questions on COVID vaccine attitudes, including: “Vaccine is safe,” “Feel safer at work,” “Concern re: vaccine side effects,” “Confidence in scientific vetting,” “Trust in vaccine info,” and “Will recommend vaccine.” <br>Each bar represents a question, divided into colored segments for each response level from “1 - Strongly Agree” to “5 - Strongly Disagree,” using a perceptually uniform Viridis palette. Most responses cluster on the agreement end of the scale, especially for trust and confidence statements, while the item “Concern about vaccine safety” shows a more neutral distribution centered around “Somewhat Agree” and “Neither Agree Nor Disagree.” <br>The visual design emphasizes sentiment distribution and is optimized for accessibility, including colorblind-friendly contrast and consistent labeling.
+</div>
+
+
+
 
