@@ -144,13 +144,14 @@ plot_all <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
       plot.title = element_text(hjust = 0.5),
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_text(
         vjust = 0.5,
         size = strip_text_size,
-        margin = margin(t = 20, b = 10, r = 5, l = 5)
+        margin = margin(t = 20, b = 10, r = 10, l = 10)
       ),
       strip.text.y.right = element_text(
         angle = 0,
@@ -182,6 +183,7 @@ plot_age <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
@@ -216,6 +218,7 @@ plot_gender <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
@@ -250,6 +253,7 @@ plot_race <- function(data) {
       y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
@@ -281,9 +285,10 @@ plot_ethnicity <- function(data, sub_title_specific) {
     theme_minimal(base_size = 10) +
     labs(
       x = NULL,
-      y = paste0("Mean Likert score\n(Error bars: ", sub_title_specific, ")")
+      y = NULL
     ) +
     theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
       strip.background = element_rect(fill = strip_fill_color, color = "black"),
       strip.placement = strip_placement,
       strip.text.x = element_blank(),
@@ -293,11 +298,119 @@ plot_ethnicity <- function(data, sub_title_specific) {
         margin = margin(t = 10, b = 10, r = 4, l = 7)
       ),
       axis.text.y = element_text(size = 10),
-      axis.text.x = element_text(size = 10),
-      axis.ticks.x = element_line(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
       panel.spacing = unit(1, "lines")
     )
 }
+# Function for the Profession plot (g5)
+plot_profession <- function(data, sub_title_specific) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 10) +
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 4, l = 7)
+      ),
+      axis.text.y = element_text(size = 10),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing = unit(1, "lines")
+    )
+}
+
+# Function for the Vax(COVID) plot (g6)
+plot_vax_status <- function(data, sub_title_specific) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 10) +
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    theme(
+      panel.spacing.x = unit(0.1, "lines"),  # Increase spacing between columns
+      strip.background = element_rect(fill = strip_fill_color, color = "black"),
+      strip.placement = strip_placement,
+      strip.text.x = element_blank(),
+      strip.text.y.right = element_text(
+        angle = 0,
+        vjust = 0.5,
+        margin = margin(t = 10, b = 10, r = 4, l = 7)
+      ),
+      axis.text.y = element_text(size = 10),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing = unit(1, "lines")
+    )
+}
+
+# (g7) - flu Vx
+plot_flu_vax_status <- function(data, sub_title_specific) {
+  ggplot(data, aes(x = explanatory_value, y = mean, group = explanatory_value)) +
+    geom_errorbar(aes(ymin = low, ymax = high), width = 0.2) +
+    geom_point(size = set_dot_size, color = "black") +
+    coord_flip() +
+    facet_grid(
+      rows = vars(explanatory),
+      cols = vars(response),
+      labeller = labeller(
+        explanatory = as_labeller(explanatory_labels)
+      )
+    ) +
+    theme_minimal(base_size = 10) +
+    labs(
+      x = NULL,
+      y = paste0("Mean Likert score\n(Error bars: ", sub_title_specific, ")")
+    ) +
+theme(
+  panel.spacing.x = unit(0.1, "lines"),
+  strip.background = element_rect(fill = strip_fill_color, color = "black"),
+  strip.placement = strip_placement,
+  strip.text.x = element_blank(),
+  strip.text.y.right = element_text(
+    angle = 0,
+    vjust = 0.5,
+    margin = margin(t = 10, b = 10, r = 4, l = 7)
+  ),
+  axis.text.y = element_text(size = 10),
+  axis.text.x = element_text(size = 10),      # <- show x-axis Likert labels
+  axis.ticks.x = element_line(),              # <- show x-axis ticks
+  panel.spacing = unit(1, "lines")
+)
+
+}
+
+
+
 # ..... prepare the variables.
 # . ethnicity.
 filter_ethnicity_data <- function(data) {
@@ -383,6 +496,50 @@ filter_race_data <- function(data) {
     )
 }
 
+# . medical profssion
+filter_profession_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_profession") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+        "0" = "Medical",
+        "1" = "Nursing"
+      ),
+      explanatory_value = factor(explanatory_value, levels = c("Nursing", "Medical")),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_profession"))
+    )
+}
+
+# . had covid vax
+filter_vax_status_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_already_vax") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+        "0" = "No",
+        "1" = "Yes"
+      ),
+      explanatory_value = factor(explanatory_value, levels = c("No", "Yes")),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_profession", "exp_already_vax"))
+    )
+}
+
+# . had FLU vax
+filter_flu_vax_data <- function(data) {
+  data %>%
+    filter(explanatory == "exp_flu_vax") %>%
+    filter(is.finite(mean), is.finite(low), is.finite(high)) %>%
+    mutate(
+      explanatory_value = recode(as.character(explanatory_value),
+        "0" = "No",
+        "1" = "Yes"
+      ),
+      explanatory_value = factor(explanatory_value, levels = c("No", "Yes")),
+      explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_profession", "exp_already_vax", "exp_flu_vax"))
+    )
+}
 
 ```
 
@@ -1174,19 +1331,6 @@ cat(glue(
   "📐 Columns: {ncol(survey_clean)}\n"
 ))
 #-- ... --- based on info in pdf file and .csv .. encode the following
-# exp_profession...........	
-# exp_flu_vax..............	
-# exp_gender............... Q2 What is your gender?	
-# exp_race................. Q3 What is your race?	
-# exp_ethnicity............ Q4 What is your ethnicity?	
-# exp_age_bin.............. Q1 What is your age?	
-# exp_already_vax..........	
-# resp_safety.............. Q26 Based on my understanding, I believe the vaccine is safe.	
-# resp_confidence_science.. Q34 I am confident in the scientific vetting process for the new COVID vaccines.	
-# resp_concern_safety...... Q27 I am concerned about the safety and side effects of the vaccine.	
-# resp_feel_safe_at_work... Q28 Getting the vaccine will make me feel safer at work.	
-# resp_will_recommend...... Q29 I will recommend the vaccine to family, friends, and community members.	
-# resp_trust_info.......... Q31 I trust the information that I have received about the COVID-19 vaccines.
 
 covid_survey_longer <- survey_clean |>
   pivot_longer(
@@ -1323,6 +1467,7 @@ covid_survey_summary_stats <- bind_rows(
 )
 
 print(covid_survey_summary_stats)
+write.csv(covid_survey_summary_stats, "covid_survey_summary_stats.csv", row.names = FALSE)
 
 
 ```
@@ -1342,7 +1487,11 @@ explanatory_labels <- c(
   exp_age_bin = "Age",
   exp_gender = "Gender",
   exp_race = "Race"    ,# Added Race label
-  exp_ethnicity = "Ethnicity"
+  exp_ethnicity = "Ethnicity",
+  exp_profession = "Profession",
+  exp_already_vax = "Had COVID\nVaccine",
+  exp_flu_vax = "Had flu Vaccine\nthis year"
+
 )
 
 # - call formatting for encoded data
@@ -1354,14 +1503,20 @@ covid_race_only <- filter_race_data(covid_survey_summary_stats_by_group)
 
 covid_ethnicity_only <- filter_ethnicity_data(covid_survey_summary_stats_by_group)
 
+covid_profession_only <- filter_profession_data(covid_survey_summary_stats_by_group)
+
+covid_covid_vax_only <-filter_vax_status_data(covid_survey_summary_stats_by_group)
+
+covid_flu_vax_only <- filter_flu_vax_data(covid_survey_summary_stats_by_group)
+
 # Label mappings for response
 response_labels <- c(
-  resp_safety = "Vaccine is safe",
-  resp_feel_safe_at_work = "Feel safer\n at work",
-  resp_concern_safety = "Concern about \nvaccine safety",
-  resp_confidence_science = "Confidence in \nscientific vetting",
-  resp_trust_info = "Trust in \nvaccine info",
-  resp_will_recommend = "Will recommend\nvaccine"
+  resp_safety = "Based on my\n understanding I\n belive the vaccine\n is safe.",
+  resp_feel_safe_at_work = "Getting the vaccine\nwill make me feel\nsafer at work.",
+  resp_concern_safety = "I am concerned\nabout the safety\nand side effects of\nthe vaccine.",
+  resp_confidence_science = "I am confident in\n the scientific\n vetting process for\n the new COVID\vaccines.",
+  resp_trust_info = "I trust the\ninformation that I\nhave received about\nthe vaccines",
+  resp_will_recommend = "I will recommend\nthe vaccine to\nfamily, friends,\nand community\nmembers."
 )
 
 # Reorder response factor levels to match response_labels
@@ -1372,11 +1527,14 @@ covid_gender_only <- covid_gender_only %>%
   mutate(response = factor(response, levels = names(response_labels)))
 
 # View distinct codes used in the exp_ethnicity variable
-covid_survey_summary_stats_by_group %>%
-  filter(explanatory == "exp_ethnicity") %>%
-  mutate(explanatory_value = as.character(explanatory_value)) %>%
-  distinct(explanatory_value) %>%
-  arrange(explanatory_value)
+# covid_survey_summary_stats_by_group %>%
+#   filter(explanatory == "exp_ethnicity") %>%
+#   mutate(explanatory_value = as.character(explanatory_value)) %>%
+#   distinct(explanatory_value) %>%
+#   arrange(explanatory_value)
+
+# - medical profession
+#filter_profession_data
 
 # Vector controlling heights of each row - add height for race
 row_heights <- c(
@@ -1384,7 +1542,10 @@ row_heights <- c(
   3,    # - 'exp_age_bin' row height
   3,    # - 'exp_gender' row height - adjust as desired
   3,    # - 'exp_race' row height - new Race row
-  3     # - ethnicity
+  3,     # - ethnicity
+  2,     # - profession
+  2,     # - Covid Vax
+  2     # -Flu Vax
 )
 
 # Reorder response factor levels for 'All' layer
@@ -1396,7 +1557,7 @@ covid_all_only <- covid_survey_summary_stats_all %>%
 # Define variables for strip appearance
 strip_fill_color <- "gray90"
 strip_text_color <- "black"
-strip_text_size <- 10
+strip_text_size <- 9
 strip_text_face <- "plain"
 strip_text_angle_x <- 0
 strip_text_angle_y <- 0
@@ -1413,10 +1574,15 @@ g2 <- plot_gender(covid_gender_only)
 # Fourth layer - Race
 g3 <- plot_race(covid_race_only)
 # Fifth layer: Ethnicity (if present)
-g4 <- plot_ethnicity(covid_ethnicity_only,"Error bars in range from 10th to 90th percentile")
+g4 <- plot_ethnicity(covid_ethnicity_only,"")
+#
+g5 <- plot_profession(covid_profession_only,"")
 
+g6 <- plot_vax_status(covid_covid_vax_only,"")
+
+g7 <- plot_flu_vax_status(covid_flu_vax_only,"Error bars in range from 10th to 90th percentile")
 # Composite plot with 5 layers stacked (All / Age / Gender / Race / Ethnicity)
-composite_plot <- (g0 / g1 / g2 / g3 / g4 + plot_layout(heights = row_heights)) &
+composite_plot <- (g0 / g1 / g2 / g3 / g4 / g5 /g6 /g7 + plot_layout(heights = row_heights)) &
   theme(plot.margin = margin(0, 0, 0, 0))
 
 print(composite_plot)
