@@ -1,0 +1,85 @@
+Q26 Based on my understanding, I believe the vaccine is safe.
+
+    o Strongly agree (6)
+    o Somewhat agree (7)
+    o Neither agree nor disagree (8)
+    o Somewhat disagree (9)
+    o Strongly disagree (10)
+
+Q34 I am confident in the scientific vetting process for the new COVID vaccines.
+
+    o Strongly agree (1)
+    o Somewhat agree (2)
+    o Neither agree nor disagree (3)
+    o Somewhat disagree (4)
+    o Strongly disagree (5)
+
+Q27 I am concerned about the safety and side effects of the vaccine.
+
+    o Strongly agree (6)
+    o Somewhat agree (7)
+    o Neither agree nor disagree (8)
+    o Somewhat disagree (9)
+    o Strongly disagree (10)
+
+
+Q28 Getting the vaccine will make me feel safer at work.
+
+   o Strongly agree (1)
+   o Somewhat agree (2)
+   o Neither agree nor disagree (3)
+   o Somewhat disagree (4)
+   o Strongly disagree (5)
+
+Q29 I will recommend the vaccine to family, friends, and community members.
+
+   o Strongly agree (1)
+   o Somewhat agree (2)
+   o Neither agree nor disagree (3)
+   o Somewhat disagree (4)
+   o Strongly disagree (5)
+
+Q31 I trust the information that I have received about the COVID-19 vaccines.
+
+   o Strongly agree (1)
+   o Somewhat agree (2)
+   o Neither agree nor disagree (3)
+   o Somewhat disagree (4)
+   o Strongly disagree (5)
+
+
+                                                   2
+
+
+Q1 What is your age?
+
+
+Binned into [0 – 20], [21 – 25], [26 – 30], [30, ∞)
+
+
+
+Q2 What is your gender?
+
+    o Male (1)
+    o Female (2)
+    o Non-binary / third gender (3)
+    o Prefer not to say (4)
+
+Q3 What is your race?
+
+    o American Indian/Alaska Native (1)
+    o Asian (2)
+    o Black/African American (3)
+    o Native Hawaiian/Other Pacific Islander (4)
+    o White (5)
+
+Q4 What is your ethnicity?
+
+    o Hispanic/Latino (1)
+    o Non-Hispanic/Non-Latino (2)
+
+
+
+
+                                                      3
+
