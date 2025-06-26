@@ -61,3 +61,13 @@
   margin-left: -300px;     /* No left margin */
   margin-right: auto; /* Push image to the left */
 }
+
+/* fyi */
+.fyi-note {
+  background-color: salmon;
+  padding: 1em;
+  border-radius: 5px;
+  color: #333;
+  font-size: 1rem;
+  border: 1px solid #e08e8e;
+}

@@ -506,7 +506,7 @@ filter_profession_data <- function(data) {
         "0" = "Medical",
         "1" = "Nursing"
       ),
-      explanatory_value = factor(explanatory_value, levels = c("Nursing", "Medical")),
+      explanatory_value = factor(explanatory_value, levels = c("Medical","Nursing")),
       explanatory = factor(explanatory, levels = c("All", "exp_age_bin", "exp_gender", "exp_race", "exp_profession"))
     )
 }
@@ -1476,6 +1476,12 @@ write.csv(covid_survey_summary_stats, "covid_survey_summary_stats.csv", row.name
 Q3e - recreate plot 
 </div>
 
+<div class="fyi-note">
+This problem has been permuted over several times, and done in several ways..
+it's <b>noted</b> that 
+Some of the data here doesn't quite visual match the given.
+</div>
+
 ```{r}
 #| label: label-me-3-e
 #| fig.width: 10   # width in inches
@@ -1596,6 +1602,12 @@ print(composite_plot)
 Q4 ....Make Plot from Q3, but use different end point quarantiles.<br>
 When the error bars represent the 25th and 75th percentiles instead of the 10th and 90th, the intervals become narrower, reflecting a tighter range around the median of the data. This change reduces the apparent variability and uncertainty in responses. Compared to the previous plot, the shorter error bars may make the group differences appear more precise but potentially understate the true variability. Therefore, while the overall trends remain similar, conclusions about the degree of uncertainty should be adjusted to recognize that the interquartile range excludes more extreme values.
 <br>
+</div>
+
+<div class="fyi-note">
+This problem has been permuted over several times, and done in several ways..
+it's <b>noted:</b> <br>The likert-axis only goes from 1-4.<br>
+Some of the 'dumbbell percentile tips' do not look attached to the mean.
 </div>
 ```{r,echo=FALSE}
 #| label: label-me-4
